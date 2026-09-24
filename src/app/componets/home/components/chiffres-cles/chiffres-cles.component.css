@@ -1,0 +1,228 @@
+/* ============================================================
+   VARIABLES
+   ============================================================ */
+:host {
+  --ab-red: #e2251b;
+  --ab-orange: #f6871f;
+  --ab-gradient: linear-gradient(135deg, #f6a821 0%, #e2251b 100%);
+  --ab-text: #0f172a;
+  --ab-text-muted: #64748b;
+  --ab-text-soft: #94a3b8;
+  --ab-border: #e2e8f0;
+
+  display: block;
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ============================================================
+   SECTION
+   ============================================================ */
+.chiffres-section {
+  padding: 100px 60px;
+  background: #ffffff;
+  border-top: 1px solid var(--ab-border);
+}
+
+/* Section header */
+.section-header {
+  text-align: center;
+  margin-bottom: 72px;
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.section-header .section-label {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--ab-orange);
+  margin-bottom: 16px;
+}
+
+.section-header .section-line-center {
+  width: 48px;
+  height: 3px;
+  background: var(--ab-gradient);
+  border-radius: 2px;
+  margin: 0 auto 20px;
+}
+
+.section-header h2 {
+  font-size: 46px;
+  font-weight: 800;
+  color: var(--ab-text);
+  margin-bottom: 16px;
+  letter-spacing: -1.5px;
+  line-height: 1.1;
+}
+
+.section-desc {
+  font-size: 17px;
+  color: var(--ab-text-muted);
+  margin: 0 auto;
+}
+
+/* ============================================================
+   GRILLE
+   ============================================================ */
+.chiffres-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 24px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* ============================================================
+   CARTE CHIFFRE
+   ============================================================ */
+.chiffre-card {
+  position: relative;
+  background: #ffffff;
+  border: 1px solid var(--ab-border);
+  border-radius: 20px;
+  padding: 48px 32px 40px;
+  text-align: center;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  counter-increment: chiffre-counter;
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.chiffres-grid {
+  counter-reset: chiffre-counter;
+}
+
+.chiffre-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--ab-gradient);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s ease;
+}
+
+.chiffre-card:hover {
+  transform: translateY(-8px);
+  border-color: transparent;
+  box-shadow:
+    0 20px 40px rgba(226, 37, 27, 0.10),
+    0 4px 12px rgba(15, 23, 42, 0.05);
+}
+
+.chiffre-card:hover::before {
+  transform: scaleX(1);
+}
+
+/* Badge numéro */
+.chiffre-numero {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #fff7ed 0%, #fef2f2 100%);
+  border: 1.5px solid rgba(226, 37, 27, 0.15);
+  color: var(--ab-red);
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  font-family: 'Inter', monospace;
+  margin-bottom: 20px;
+  transition: all 0.4s ease;
+}
+
+.chiffre-card:hover .chiffre-numero {
+  background: var(--ab-gradient);
+  color: #ffffff;
+  border-color: transparent;
+  transform: scale(1.08);
+  box-shadow: 0 8px 20px rgba(226, 37, 27, 0.35);
+}
+
+.chiffre-value {
+  font-size: 44px;
+  font-weight: 900;
+  letter-spacing: -2px;
+  line-height: 1;
+  margin: 0 0 12px;
+  background: var(--ab-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.chiffre-label {
+  font-size: 12px;
+  color: var(--ab-text-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* ============================================================
+   SKELETON
+   ============================================================ */
+.skeleton-card {
+  height: 220px;
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 20px;
+  border: 1px solid var(--ab-border);
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ============================================================
+   ANIMATION D'ENTRÉE
+   ============================================================ */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.chiffre-card {
+  animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) backwards;
+}
+.chiffre-card:nth-child(1) { animation-delay: 0.05s; }
+.chiffre-card:nth-child(2) { animation-delay: 0.10s; }
+.chiffre-card:nth-child(3) { animation-delay: 0.15s; }
+.chiffre-card:nth-child(4) { animation-delay: 0.20s; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 992px) {
+  .chiffres-section { padding: 70px 30px; }
+  .section-header h2 { font-size: 34px; }
+  .section-header { margin-bottom: 48px; }
+}
+
+@media (max-width: 640px) {
+  .chiffres-section { padding: 50px 20px; }
+  .section-header h2 { font-size: 28px; }
+  .chiffres-grid { grid-template-columns: 1fr 1fr; gap: 16px; }
+  .chiffre-card { padding: 32px 20px 28px; min-height: 180px; }
+  .chiffre-value { font-size: 32px; letter-spacing: -1.5px; }
+  .chiffre-label { font-size: 10.5px; }
+  .chiffre-numero { width: 40px; height: 40px; font-size: 13px; margin-bottom: 14px; }
+}

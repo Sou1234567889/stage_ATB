@@ -1,0 +1,898 @@
+.detail-wrapper { padding: 0; }
+
+/* En-tête */
+.stagiaire-header-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  flex-wrap: wrap;
+}
+
+.btn-retour {
+  padding: 8px 16px;
+  background: #f3f4f6;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+}
+.btn-retour:hover { background: #e5e7eb; }
+
+.stagiaire-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+}
+
+.stagiaire-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff6b35, #f7931e);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.stagiaire-info h2 { margin: 0 0 4px 0; font-size: 20px; color: #111827; }
+.stagiaire-info .muted { margin: 2px 0; font-size: 13px; color: #6b7280; }
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 8px;
+  background: #fff;
+  padding: 8px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.tabs button {
+  padding: 10px 20px;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.tabs button:hover { background: #f3f4f6; }
+.tabs button.active {
+  background: linear-gradient(135deg, #ff6b35, #f7931e);
+  color: #fff;
+  font-weight: 600;
+}
+
+.tab-content { animation: fadeIn 0.2s ease-out; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Cartes */
+.heures-card, .rapports-card, .chat-card, .meet-card {
+  background: #fff;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.heures-card h3, .rapports-card h3, .chat-card h3, .meet-card h3 {
+  margin: 0 0 20px 0;
+  font-size: 18px;
+  color: #111827;
+}
+
+/* Heures */
+.heures-progress { margin-bottom: 20px; }
+.heures-bar {
+  height: 20px;
+  background: #f3f4f6;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+.heures-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ff6b35, #f7931e);
+  border-radius: 10px;
+  transition: width 0.5s ease;
+}
+.heures-label { font-size: 14px; color: #374151; }
+.heures-pct { color: #ff6b35; font-weight: 700; }
+
+/* Boutons */
+.btn-primary {
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #ff6b35, #f7931e);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+}
+.btn-primary.big { padding: 14px 32px; font-size: 15px; }
+
+.btn-outline {
+  padding: 8px 16px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  color: #374151;
+}
+
+/* Rapports */
+.rapports-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.upload-btn { cursor: pointer; display: inline-block; }
+
+.rapports-list { display: flex; flex-direction: column; gap: 10px; }
+
+.rapport-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  transition: all 0.2s;
+}
+.rapport-item:hover { background: #f9fafb; border-color: #d1d5db; }
+
+.rapport-icon {
+  width: 42px;
+  height: 42px;
+  background: #fee2e2;
+  color: #991b1b;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+.rapport-info { flex: 1; }
+.rapport-nom { margin: 0 0 2px 0; font-size: 14px; font-weight: 500; color: #111827; }
+.rapport-meta { margin: 0; font-size: 12px; color: #6b7280; }
+
+.rapport-statut { padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+.statut-valide { background: #d1fae5; color: #065f46; }
+.statut-attente { background: #fef3c7; color: #92400e; }
+.statut-rejete { background: #fee2e2; color: #991b1b; }
+
+.rapport-actions { display: flex; gap: 6px; }
+
+.row-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.row-btn.edit { background: #eef2ff; color: #4338ca; }
+.row-btn.edit:hover { background: #e0e7ff; }
+.row-btn.delete { background: #fee2e2; color: #991b1b; }
+.row-btn.delete:hover { background: #fecaca; }
+
+/* Chat */
+.chat-card { display: flex; flex-direction: column; height: 500px; }
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  background: #f9fafb;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chat-message { display: flex; justify-content: flex-start; }
+.chat-message.mine { justify-content: flex-end; }
+
+.chat-bubble {
+  max-width: 70%;
+  padding: 10px 14px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+.chat-message.mine .chat-bubble {
+  background: linear-gradient(135deg, #ff6b35, #f7931e);
+  color: #fff;
+}
+
+.chat-author { margin: 0 0 4px 0; font-size: 11px; font-weight: 700; opacity: 0.7; }
+.chat-text { margin: 0; font-size: 14px; line-height: 1.4; }
+.chat-time { font-size: 11px; opacity: 0.6; display: block; margin-top: 4px; }
+
+.chat-input { display: flex; gap: 10px; }
+.chat-input input {
+  flex: 1;
+  padding: 12px 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 14px;
+  outline: none;
+}
+.chat-input input:focus { border-color: #ff6b35; }
+
+/* Meet */
+.meet-pre { text-align: center; padding: 40px 20px; }
+.meet-pre h3 { font-size: 22px; margin-bottom: 12px; }
+.meet-pre p { color: #6b7280; margin-bottom: 24px; }
+
+.meet-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 12px 16px;
+  background: #f3f4f6;
+  border-radius: 8px;
+}
+.meet-timer { font-family: monospace; font-size: 16px; font-weight: 700; color: #e41e3f; }
+
+.meet-videos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.video-container { position: relative; }
+
+.video-placeholder {
+  aspect-ratio: 16 / 9;
+  background: linear-gradient(135deg, #1e293b, #0f172a);
+  color: #fff;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 600;
+}
+.video-placeholder.camera-off { background: #374151; font-size: 14px; color: #9ca3af; }
+
+.video-label {
+  margin: 8px 0 0 0;
+  text-align: center;
+  font-size: 13px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.meet-controls {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px;
+  background: #f9fafb;
+  border-radius: 10px;
+}
+
+.meet-btn {
+  padding: 12px 24px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.jitsi-frame {
+  width: 100%;
+  height: 500px;
+  border: none;
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+
+.chat-empty {
+  text-align: center;
+  color: #9ca3af;
+  font-size: 13px;
+  padding: 40px 20px;
+  font-style: italic;
+}
+
+.jitsi-container {
+  width: 100%;
+  height: 600px;
+  min-height: 400px;
+  background: #1a1a2e;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.meet-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  background: #f5f5f7;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.meet-timer {
+  font-family: 'Courier New', monospace;
+  font-size: 20px;
+  font-weight: 700;
+  color: #e2251b;
+}
+
+.meet-controls {
+  display: flex;
+  justify-content: center;
+  padding: 16px;
+}
+
+.meet-btn.danger {
+  background: #e2251b;
+  color: white;
+  border: none;
+  padding: 12px 32px;
+  border-radius: 24px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 15px;
+  transition: all 0.2s;
+}
+
+.meet-btn.danger:hover {
+  background: #c41d14;
+  transform: scale(1.02);
+}
+.meet-btn:hover { background: #f3f4f6; }
+.meet-btn.off { background: #fee2e2; color: #991b1b; border-color: #fecaca; }
+.meet-btn.danger { background: #e41e3f; color: #fff; border-color: #e41e3f; }
+.meet-btn.danger:hover { background: #c4162f; }
+
+/* Heures restantes */
+.heures-restantes {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.heures-complete {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: #10b981;
+  font-weight: 700;
+}
+
+.pointage-info {
+  margin: 10px 0 0;
+  font-size: 12.5px;
+  color: #9ca3af;
+  font-style: italic;
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-primary:disabled:hover {
+  transform: none;
+  box-shadow: 0 3px 10px rgba(226, 37, 27, 0.25);
+}
+
+/* =====================================================
+   MODAL APERÇU LIVRABLE
+   ===================================================== */
+.stag-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 24px;
+}
+
+.apercu-modal {
+  background: #fff;
+  border-radius: 16px;
+  max-width: 680px;
+  width: 100%;
+  max-height: 85vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 24px 48px rgba(0,0,0,0.28);
+}
+
+.apercu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 22px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.apercu-header h3 { margin: 0; font-size: 18px; }
+
+.apercu-close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #64748b;
+}
+
+.apercu-body { padding: 22px; overflow-y: auto; }
+
+.apercu-desc { color: #334155; line-height: 1.6; margin: 0 0 12px; }
+.apercu-meta { color: #94a3b8; font-size: 13px; margin: 0 0 18px; }
+
+.apercu-file.empty { color: #94a3b8; font-style: italic; }
+
+.apercu-btn {
+  display: inline-block;
+  padding: 10px 18px;
+  background: #f6a821;
+  color: #fff;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+/* =====================================================
+   MEET — Style Google Meet
+   ===================================================== */
+
+.meet-tab {
+  padding: 0;
+  height: 100%;
+  min-height: 640px;
+}
+
+/* ---------- Préjoin ---------- */
+.meet-prejoin {
+  background: #202124;
+  color: #e8eaed;
+  border-radius: 16px;
+  padding: 32px;
+  min-height: 600px;
+  display: flex;
+  flex-direction: column;
+}
+
+.meet-prejoin-header { text-align: center; margin-bottom: 28px; }
+.meet-prejoin-header h2 {
+  font-size: 26px; font-weight: 500; color: #fff; margin: 0 0 8px;
+}
+.meet-prejoin-sub { color: #bdc1c6; font-size: 14px; margin: 0; }
+
+.meet-prejoin-body {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 24px;
+  flex: 1;
+  margin-bottom: 24px;
+}
+
+.meet-preview-box {
+  position: relative;
+  background: #3c4043;
+  border-radius: 12px;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+}
+
+.meet-preview-box video {
+  width: 100%; height: 100%; object-fit: cover;
+  transform: scaleX(-1);
+}
+.meet-preview-box video.hidden { display: none; }
+
+.meet-preview-off {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 16px; color: #9aa0a6;
+}
+
+.meet-preview-off-avatar {
+  width: 96px; height: 96px; border-radius: 50%;
+  background: #5f6368; color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px; font-weight: 600;
+}
+
+.meet-preview-loading {
+  position: absolute; inset: 0;
+  background: rgba(32, 33, 36, 0.85);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 12px;
+}
+
+.meet-spinner {
+  width: 42px; height: 42px;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #8ab4f8;
+  border-radius: 50%;
+  animation: meet-spin 0.9s linear infinite;
+}
+@keyframes meet-spin { to { transform: rotate(360deg); } }
+
+.meet-preview-controls {
+  position: absolute; bottom: 16px; left: 50%;
+  transform: translateX(-50%);
+  display: flex; gap: 12px;
+}
+
+.meet-circle-btn {
+  width: 48px; height: 48px; border-radius: 50%;
+  border: none; background: rgba(60, 64, 67, 0.9);
+  color: #fff; font-size: 20px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+.meet-circle-btn:hover { background: rgba(95, 99, 104, 0.95); transform: scale(1.05); }
+.meet-circle-btn.off { background: #ea4335; }
+.meet-circle-btn.off:hover { background: #d93025; }
+
+.meet-settings-box {
+  background: #292a2d;
+  border-radius: 12px;
+  padding: 20px;
+}
+.meet-settings-box h3 {
+  font-size: 16px; font-weight: 500; color: #fff; margin: 0 0 16px;
+}
+.meet-setting-group { margin-bottom: 16px; }
+.meet-setting-group label {
+  display: block; color: #9aa0a6; font-size: 12px;
+  margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.4px;
+}
+.meet-setting-group select {
+  width: 100%; padding: 10px 12px;
+  background: #3c4043; color: #e8eaed;
+  border: 1px solid #5f6368; border-radius: 8px;
+  font-size: 14px; outline: none; cursor: pointer;
+}
+.meet-setting-group select:focus { border-color: #8ab4f8; }
+
+.meet-preview-error {
+  margin-top: 12px; padding: 10px;
+  background: rgba(234, 67, 53, 0.15);
+  border: 1px solid rgba(234, 67, 53, 0.4);
+  border-radius: 8px; color: #f28b82; font-size: 13px;
+}
+
+.meet-prejoin-actions {
+  display: flex; justify-content: center;
+  gap: 12px; padding-top: 16px;
+  border-top: 1px solid #3c4043;
+}
+
+.meet-btn-cancel, .meet-btn-join {
+  padding: 12px 28px; border-radius: 24px;
+  border: none; font-size: 15px; font-weight: 500;
+  cursor: pointer; transition: all 0.15s ease;
+}
+.meet-btn-cancel { background: transparent; color: #8ab4f8; }
+.meet-btn-cancel:hover { background: rgba(138, 180, 248, 0.1); }
+
+.meet-btn-join {
+  background: #8ab4f8; color: #202124;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.meet-btn-join:hover { background: #aecbfa; }
+.meet-btn-join:disabled { opacity: 0.5; cursor: not-allowed; }
+
+
+
+.meet-topbar {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 16px;
+  background: #202124;
+  border-bottom: 1px solid #3c4043;
+  color: #e8eaed;
+}
+.meet-topbar-left { display: flex; align-items: center; gap: 12px; }
+.meet-recording-dot {
+  width: 8px; height: 8px; background: #ea4335; border-radius: 50%;
+  animation: meet-pulse 1.4s ease-in-out infinite;
+}
+@keyframes meet-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+.meet-topbar-title { font-size: 14px; font-weight: 500; }
+.meet-timer-pill {
+  padding: 4px 10px; background: #3c4043;
+  border-radius: 12px; font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.meet-topbar-btn {
+  background: #3c4043; border: none; color: #e8eaed;
+  padding: 6px 12px; border-radius: 16px;
+  font-size: 12px; cursor: pointer; transition: background 0.15s;
+}
+.meet-topbar-btn:hover { background: #5f6368; }
+
+
+
+
+
+/* ---------- Panneau latéral ---------- */
+.meet-side-panel {
+  width: 300px;
+  background: #202124;
+  border-left: 1px solid #3c4043;
+  display: flex; flex-direction: column;
+  color: #e8eaed;
+}
+
+.meet-panel-tabs {
+  display: flex; border-bottom: 1px solid #3c4043;
+}
+.meet-panel-tabs button {
+  flex: 1; padding: 12px 0;
+  background: transparent; border: none;
+  color: #9aa0a6; font-size: 16px;
+  cursor: pointer; transition: all 0.15s;
+  position: relative;
+}
+.meet-panel-tabs button.active { color: #8ab4f8; }
+.meet-panel-tabs button.active::after {
+  content: '';
+  position: absolute; bottom: -1px; left: 20%; right: 20%;
+  height: 2px; background: #8ab4f8;
+}
+.meet-tab-count {
+  font-size: 11px; background: #3c4043;
+  padding: 1px 6px; border-radius: 8px;
+  margin-left: 4px;
+}
+
+.meet-panel-content {
+  flex: 1; overflow-y: auto; padding: 14px;
+}
+
+.meet-participant-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 0;
+}
+.meet-participant-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: #8ab4f8; color: #202124;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 600; font-size: 13px;
+}
+.meet-participant-avatar.alt { background: #f6a821; color: #fff; }
+.meet-participant-info { flex: 1; }
+.meet-participant-name { display: block; font-size: 14px; }
+.meet-participant-role { display: block; font-size: 11px; color: #9aa0a6; }
+.meet-mic-status { font-size: 14px; }
+
+.meet-empty {
+  color: #9aa0a6; font-size: 13px; text-align: center;
+  padding: 20px 0;
+}
+.meet-muted { color: #9aa0a6; font-size: 12px; }
+
+/* Chat latéral */
+.meet-chat-messages { flex: 1; overflow-y: auto; }
+.meet-chat-msg { margin-bottom: 12px; }
+.meet-chat-author { font-weight: 600; font-size: 12px; color: #8ab4f8; }
+.meet-chat-time { font-size: 10px; color: #9aa0a6; margin-left: 6px; }
+.meet-chat-msg p { margin: 3px 0 0; font-size: 13px; color: #e8eaed; }
+
+.meet-chat-input {
+  display: flex; gap: 6px; margin-top: 10px;
+  border-top: 1px solid #3c4043; padding-top: 10px;
+}
+.meet-chat-input input {
+  flex: 1; padding: 8px 12px;
+  background: #3c4043; color: #e8eaed;
+  border: none; border-radius: 20px;
+  font-size: 13px; outline: none;
+}
+.meet-chat-input button {
+  background: #8ab4f8; color: #202124;
+  border: none; border-radius: 50%;
+  width: 34px; height: 34px;
+  cursor: pointer; font-size: 14px;
+}
+
+/* ---------- Barre de contrôles inférieure ---------- */
+.meet-controls-bar {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 20px;
+  background: #202124;
+  border-top: 1px solid #3c4043;
+}
+.meet-controls-left, .meet-controls-right {
+  flex: 1; display: flex; align-items: center;
+}
+.meet-controls-right { justify-content: flex-end; }
+.meet-controls-center {
+  display: flex; gap: 10px;
+  justify-content: center;
+}
+.meet-room-label {
+  font-size: 12px; color: #9aa0a6;
+  font-family: monospace;
+}
+.meet-participants-count {
+  font-size: 13px; color: #e8eaed;
+}
+
+.meet-control-btn {
+  width: 48px; height: 48px; border-radius: 50%;
+  border: none; background: #3c4043;
+  color: #e8eaed; font-size: 20px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s ease;
+}
+.meet-control-btn:hover { background: #5f6368; }
+.meet-control-btn.off { background: #ea4335; }
+.meet-control-btn.off:hover { background: #d93025; }
+.meet-control-btn.active { background: #8ab4f8; color: #202124; }
+.meet-control-btn.danger {
+  background: #ea4335; width: 60px; border-radius: 28px;
+}
+.meet-control-btn.danger:hover { background: #d93025; }
+
+.meet-control-icon { font-size: 20px; }
+
+/* ⚠️ CORRECTIF CRITIQUE : force le conteneur Jitsi à avoir une hauteur */
+/* ============================================================
+   MEET — Conteneur avec hauteur FIXE
+   ============================================================ */
+.meet-active-wrapper {
+  background: #202124;
+  display: flex;
+  flex-direction: column;
+  height: 80vh;
+  min-height: 600px;
+  max-height: 900px;
+  overflow: hidden;
+  position: relative;
+  border-radius: 16px;
+}
+
+.meet-main {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+.meet-stage {
+  flex: 1;
+  background: #000;
+  position: relative;
+  min-height: 500px;
+  height: 100%;
+  display: flex;
+  overflow: hidden;
+}
+
+/* ⚠️⚠️⚠️ LA RÈGLE LA PLUS IMPORTANTE ⚠️⚠️⚠️ */
+.jitsi-container {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 500px !important;
+  position: relative;
+  display: block;
+  background: #000;
+}
+
+.jitsi-container iframe {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 500px !important;
+  border: 0 !important;
+  display: block !important;
+}
+
+/* Le parent direct doit aussi avoir une hauteur explicite */
+.meet-stage {
+  flex: 1;
+  background: #000;
+  position: relative;
+  min-height: 500px;
+  height: 100%;
+  display: flex;
+  overflow: hidden;
+}
+
+/* Le wrapper principal fixe */
+.meet-active-wrapper-stag,
+.meet-active-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 80vh;
+  min-height: 600px;
+  overflow: hidden;
+}
+
+/* Le main qui contient stage + panneau latéral */
+.meet-main {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* 🆕 Bouton croix pour fermer le Meet */
+.meet-active-wrapper {
+  position: relative;
+}
+
+.meet-close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 100;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(234, 67, 53, 0.9);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.meet-close-btn:hover {
+  background: #d93025;
+  transform: scale(1.1);
+}

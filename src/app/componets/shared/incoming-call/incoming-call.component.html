@@ -1,0 +1,62 @@
+<div class="call-overlay" *ngIf="visible">
+
+  <!-- Arrière-plan animé avec particules -->
+  <div class="call-backdrop">
+    <div class="pulse-ring ring-1"></div>
+    <div class="pulse-ring ring-2"></div>
+    <div class="pulse-ring ring-3"></div>
+  </div>
+
+  <!-- Carte principale -->
+  <div class="call-card">
+
+    <!-- Avatar avec animation -->
+    <div class="avatar-wrapper">
+      <div class="avatar-pulse"></div>
+      <div class="avatar-pulse delay-1"></div>
+      <div class="avatar">{{ callerInitials }}</div>
+    </div>
+
+    <!-- Info appelant -->
+    <p class="call-label">
+      <span class="dot-live"></span>
+      Appel vidéo entrant
+    </p>
+    <h2 class="call-name">{{ callerName }}</h2>
+    <p class="call-role">{{ callerRole }}</p>
+
+    <!-- Indicateur sonnerie -->
+    <div class="ringing-indicator">
+      <span class="ringing-icon">🔔</span>
+      <span class="ringing-text">Sonnerie en cours…</span>
+      <span class="ringing-dots">
+        <span></span><span></span><span></span>
+      </span>
+    </div>
+
+    <!-- Boutons d'action -->
+    <div class="call-actions">
+
+      <!-- Refuser -->
+      <button class="action-btn refuse" (click)="onRefuse()" title="Refuser l'appel">
+        <div class="btn-icon">
+          <span>📞</span>
+        </div>
+        <span class="btn-label">Refuser</span>
+      </button>
+
+      <!-- Accepter -->
+      <button class="action-btn accept" (click)="onAccept()" title="Accepter l'appel">
+        <div class="btn-icon">
+          <span>🎥</span>
+        </div>
+        <span class="btn-label">Accepter</span>
+      </button>
+
+    </div>
+
+    <!-- Compte à rebours discret -->
+    <p class="timeout-hint">Refus automatique dans 45 secondes</p>
+
+  </div>
+</div>

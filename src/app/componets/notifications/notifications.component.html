@@ -1,0 +1,254 @@
+<!-- ============ PAGE NOTIFICATIONS ============ -->
+<div class="apple-notifications">
+
+  <!-- ============ HEADER ============ -->
+  <header class="apple-header">
+    <div class="header-content">
+      <h1>Notifications</h1>
+      <p class="header-sub">
+        {{ stats.total }} notification{{ stats.total > 1 ? 's' : '' }}
+        · {{ stats.nonLues }} non lue{{ stats.nonLues > 1 ? 's' : '' }}
+      </p>
+    </div>
+
+    <div class="header-actions">
+      <button class="btn-text" (click)="markAllAsRead()">
+        Tout marquer comme lu
+      </button>
+      <button class="btn-text danger" (click)="deleteAllRead()">
+        Supprimer les lues
+      </button>
+    </div>
+  </header>
+
+  <!-- ============ CHIPS CATÉGORIES (Admin seulement) ============ -->
+  <section class="admin-categories" *ngIf="isAdmin">
+    <div class="category-chips">
+      <button
+        *ngFor="let cat of adminCategories"
+        class="category-chip"
+        [class.active]="activeCategory === cat.key"
+        (click)="onCategoryChange(cat.key)">
+        <span class="chip-label">{{ cat.label }}</span>
+        <span class="chip-count" *ngIf="cat.count > 0">{{ cat.count }}</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ============ FILTRES ============ -->
+  <section class="apple-filters">
+    <div class="segment-control">
+      <button
+        [class.active]="filterType === 'all'"
+        (click)="onFilterChange('all')">
+        Toutes ({{ stats.total }})
+      </button>
+      <button
+        [class.active]="filterType === 'unread'"
+        (click)="onFilterChange('unread')">
+        Non lues ({{ stats.nonLues }})
+      </button>
+      <button
+        [class.active]="filterType === 'read'"
+        (click)="onFilterChange('read')">
+        Lues ({{ stats.lues }})
+      </button>
+    </div>
+
+    <div class="apple-search">
+      <input
+        type="text"
+        placeholder="Rechercher..."
+        (input)="onSearchChange($event)">
+    </div>
+  </section>
+
+  <!-- ============ LISTE ============ -->
+  <section class="apple-list">
+
+    <!-- Loading -->
+    <ng-container *ngIf="loading">
+      <div class="apple-skeleton" *ngFor="let i of [1,2,3,4,5]">
+        <div class="skeleton-dot"></div>
+        <div class="skeleton-text">
+          <div class="skeleton-line w60"></div>
+          <div class="skeleton-line w40"></div>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- Notifications -->
+    <ng-container *ngIf="!loading">
+
+      <!-- Barre de sélection -->
+      <div class="select-bar"
+           *ngIf="paginatedNotifications.length > 0"
+           [class.has-selection]="selectedIds.size > 0">
+
+        <label class="item-check" title="Sélectionner cette page">
+          <input type="checkbox"
+                 [checked]="allPageSelected"
+                 [indeterminate]="somePageSelected && !allPageSelected"
+                 (change)="toggleSelectPage()">
+          <span class="check-box"></span>
+        </label>
+
+        <span class="select-label" *ngIf="selectedIds.size === 0">
+          Tout sélectionner
+        </span>
+
+        <span class="select-label" *ngIf="selectedIds.size > 0">
+          {{ selectedIds.size }} sélectionnée{{ selectedIds.size > 1 ? 's' : '' }}
+        </span>
+
+        <ng-container *ngIf="selectedIds.size > 0">
+          <button class="btn-text"
+                  *ngIf="selectedIds.size < filteredNotifications.length"
+                  (click)="selectAllFiltered()">
+            Sélectionner les {{ filteredNotifications.length }}
+          </button>
+          <button class="btn-text" (click)="clearSelection()">
+            Annuler
+          </button>
+          <button class="btn-text" (click)="archiveSelected()">
+            Archiver ({{ selectedIds.size }})
+          </button>
+          <button class="btn-danger" (click)="deleteSelected()">
+            Supprimer ({{ selectedIds.size }})
+          </button>
+        </ng-container>
+      </div>
+
+      <!-- Error -->
+      <div class="apple-error" *ngIf="errorMessage">
+        <p>{{ errorMessage }}</p>
+        <button (click)="loadNotifications()">Réessayer</button>
+      </div>
+
+      <!-- Item -->
+      <div
+        class="apple-item"
+        *ngFor="let notif of paginatedNotifications"
+        [class.unread]="!notif.lu"
+        [class.selected]="isSelected(notif.id)">
+
+        <!-- Case à cocher -->
+        <label class="item-check" (click)="$event.stopPropagation()">
+          <input type="checkbox"
+                 [checked]="isSelected(notif.id)"
+                 (change)="toggleSelect(notif.id)">
+          <span class="check-box"></span>
+        </label>
+
+        <!-- Point de type -->
+        <div class="item-dot" [ngClass]="getTypeClass(notif.type)"></div>
+
+        <!-- Contenu cliquable -->
+        <div class="item-content" (click)="markAsRead(notif)">
+          <div class="item-row">
+            <h3 class="item-title">{{ getNotificationTitle(notif) }}</h3>
+            <span class="item-time">{{ getTimeAgo(notif.dateCreation) }}</span>
+          </div>
+          <p class="item-message">{{ getNotificationMessage(notif) }}</p>
+
+          <!-- Info utilisateur (admin seulement) -->
+          <div class="item-user-info" *ngIf="isAdmin && notif.utilisateur">
+            <span class="user-badge">
+              {{ notif.utilisateur.prenom }} {{ notif.utilisateur.nom }}
+              <em *ngIf="notif.utilisateur.role">({{ notif.utilisateur.role }})</em>
+            </span>
+          </div>
+
+          <span class="item-tag" [ngClass]="getTypeClass(notif.type)">
+            {{ getActionLabel(notif.action) }}
+          </span>
+        </div>
+
+        <!-- Actions : Lue / Archiver / Supprimer -->
+        <div class="item-actions">
+          <button
+            class="action-text"
+            (click)="notif.lu ? markAsUnread(notif) : markAsRead(notif); $event.stopPropagation()">
+            {{ notif.lu ? 'Non lue' : 'Lue' }}
+          </button>
+
+          <button
+            class="action-text"
+            (click)="archiverNotif(notif); $event.stopPropagation()">
+            Archiver
+          </button>
+
+          <button
+            class="action-text danger"
+            (click)="deleteNotification(notif.id); $event.stopPropagation()">
+            Supprimer
+          </button>
+        </div>
+
+        <div class="unread-bar" *ngIf="!notif.lu"></div>
+      </div>
+
+      <!-- Empty -->
+      <div
+        class="apple-empty"
+        *ngIf="filteredNotifications.length === 0 && !errorMessage">
+        <h3>Aucune notification</h3>
+        <p *ngIf="activeCategory !== 'all'">
+          Aucune notification dans cette catégorie.
+        </p>
+        <p *ngIf="activeCategory === 'all'">
+          Vous êtes à jour.
+        </p>
+      </div>
+
+    </ng-container>
+
+    <!-- ============ PAGINATION ============ -->
+    <div class="apple-pagination" *ngIf="!loading && filteredNotifications.length > 0">
+
+      <div class="pagination-info">
+        Affichage
+        <strong>{{ getStartIndex() }}–{{ getEndIndex() }}</strong>
+        sur <strong>{{ filteredNotifications.length }}</strong>
+      </div>
+
+      <div class="pagination-controls">
+
+        <select
+          class="page-size-select"
+          [value]="pageSize"
+          (change)="onPageSizeChange($any($event.target).value)">
+          <option value="5">5 / page</option>
+          <option value="10">10 / page</option>
+          <option value="25">25 / page</option>
+          <option value="50">50 / page</option>
+        </select>
+
+        <button
+          class="page-arrow"
+          (click)="previousPage()"
+          [disabled]="currentPage === 1">
+          ‹
+        </button>
+
+        <button
+          class="page-num"
+          *ngFor="let p of getPagesArray()"
+          [class.active]="p === currentPage"
+          (click)="goToPage(p)">
+          {{ p }}
+        </button>
+
+        <button
+          class="page-arrow"
+          (click)="nextPage()"
+          [disabled]="currentPage === totalPages">
+          ›
+        </button>
+
+      </div>
+    </div>
+
+  </section>
+
+</div>

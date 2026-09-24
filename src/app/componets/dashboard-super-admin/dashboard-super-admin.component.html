@@ -1,0 +1,596 @@
+<div class="dash-layout">
+
+  <!-- ===================== SIDEBAR ===================== -->
+  <aside class="sidebar">
+
+    <a routerLink="/" class="brand" >
+      <img
+        src="assets/images/attijari-logo.png"
+        alt="Attijari Bank - Workspace"
+        class="brand-logo"
+      />
+    </a>
+
+    <p class="menu-title">MENU</p>
+
+    <div class="sidebar-user-card">
+      <div class="sidebar-avatar">{{ adminName | slice:0:2 | uppercase }}</div>
+      <div class="sidebar-user-info">
+        <p class="sidebar-user-name">{{ adminName }}</p>
+        <span class="sidebar-role-badge">Super Admin</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+
+      <button class="nav-item"
+              [class.active]="activeRoute === 'dashboard'"
+              (click)="setRoute('dashboard')">
+        <span class="nav-icon">▦</span>
+        <span class="nav-label">Tableau de bord</span>
+      </button>
+
+      <p class="nav-group-title">Gestion</p>
+
+      <button class="nav-item"
+              [class.active]="activeRoute === 'utilisateurs'"
+              (click)="setRoute('utilisateurs')">
+        <span class="nav-icon">◎</span>
+        <span class="nav-label">Utilisateurs</span>
+      </button>
+
+      <button class="nav-item"
+              [class.active]="activeRoute === 'offres'"
+              (click)="setRoute('offres')">
+        <span class="nav-icon">▤</span>
+        <span class="nav-label">Offres</span>
+      </button>
+
+      <button class="nav-item"
+              [class.active]="activeRoute === 'candidatures'"
+              (click)="setRoute('candidatures')">
+        <span class="nav-icon">✎</span>
+        <span class="nav-label">Candidatures</span>
+      </button>
+
+      <button class="nav-item"
+              [class.active]="activeRoute === 'logs'"
+              (click)="setRoute('logs')">
+        <span class="nav-icon">⌬</span>
+        <span class="nav-label">Logs d'audit</span>
+      </button>
+
+      <p class="nav-group-title">Paramètres</p>
+
+      <button class="nav-item"
+              [class.active]="activeRoute === 'parametres'"
+              (click)="setRoute('parametres')">
+        <span class="nav-icon">⚙</span>
+        <span class="nav-label">Paramètres système</span>
+      </button>
+
+      <button class="nav-item"
+              [class.active]="activeRoute === 'roles'"
+              (click)="setRoute('roles')">
+        <span class="nav-icon">⛨</span>
+        <span class="nav-label">Rôles et Permissions</span>
+      </button>
+
+      <button class="nav-item"
+              [class.active]="activeRoute === 'notifications'"
+              (click)="setRoute('notifications')">
+        <span class="nav-icon">◉</span>
+        <span class="nav-label">Notifications</span>
+      </button>
+
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="logout-btn" (click)="onLogout()">
+        <span>⏻</span> Se déconnecter
+      </button>
+    </div>
+  </aside>
+
+  <!-- ===================== MAIN ===================== -->
+  <main class="main">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div class="topbar-left">
+         <button
+      *ngIf="activeRoute !== 'dashboard'"
+      class="back-dashboard-btn"
+      (click)="setRoute('dashboard')">
+      <span class="back-icon">←</span>
+      <span class="back-text">Retour au tableau de bord</span>
+    </button>
+        <h1 class="topbar-title">
+          <ng-container *ngIf="activeRoute === 'dashboard'">Tableau de bord</ng-container>
+          <ng-container *ngIf="activeRoute === 'utilisateurs'"></ng-container>
+          <ng-container *ngIf="activeRoute === 'offres'"></ng-container>
+          <ng-container *ngIf="activeRoute === 'candidatures'"></ng-container>
+          <ng-container *ngIf="activeRoute === 'logs'"></ng-container>
+          <ng-container *ngIf="activeRoute === 'parametres'"></ng-container>
+          <ng-container *ngIf="activeRoute === 'roles'"></ng-container>
+          <ng-container *ngIf="activeRoute === 'notifications'"></ng-container>
+        </h1>
+      </div>
+
+      <div class="topbar-right">
+        <div class="search-input">
+          <span class="search-icon">⌕</span>
+          <input type="text" placeholder="Rechercher...">
+        </div>
+
+       <!-- Notifications avec cloche + actions -->
+<div class="notification-wrapper">
+  <button class="icon-btn" (click)="toggleNotifPanel()" [class.active]="showNotifPanel" title="Notifications">
+    <span class="bell-icon">🔔</span>
+    <span class="notif-badge" *ngIf="notificationCount > 0">{{ notificationCount }}</span>
+  </button>
+
+  <div class="notif-dropdown" *ngIf="showNotifPanel">
+
+    <!-- Header avec Tout marquer lu -->
+    <div class="notif-header">
+      <h3>Notifications</h3>
+      <button class="mark-all-btn"
+              *ngIf="notificationCount > 0"
+              (click)="markAllAsRead()">
+        Tout marquer lu
+      </button>
+    </div>
+
+    <!-- Liste (Limité à 10 pour le dropdown, mais le compteur reste global) -->
+    <div class="notif-list">
+      <!-- 🆕 On utilise un slice pour n'afficher que les 10 premières dans la cloche -->
+      <div class="notif-item"
+           *ngFor="let notif of notifications | slice:0:10"
+           (click)="onNotifClick(notif)"
+           [class.read]="notif.lu">
+
+        <!-- Icône -->
+        <div class="notif-avatar" [ngClass]="getNotifTypeClass(notif.type)">
+          <span class="notif-icon">{{ getNotifIcon(notif.type) }}</span>
+        </div>
+
+        <!-- Contenu -->
+        <div class="notif-content">
+          <p class="notif-text">
+            <strong>{{ notif.titre }}</strong>
+            {{ notif.message }}
+          </p>
+          <span class="notif-time">{{ getTimeAgo(notif.timestamp) }}</span>
+        </div>
+
+        <!-- Point non lu -->
+        <div class="notif-unread-dot" *ngIf="!notif.lu"></div>
+
+        <!-- Boutons d'action (au survol) -->
+        <div class="notif-actions">
+          <button class="notif-action-btn"
+                  *ngIf="!notif.lu"
+                  (click)="marquerLue($event, notif)"
+                  title="Marquer comme lue">
+            ✓
+          </button>
+          <button class="notif-action-btn"
+                  (click)="archiverNotif($event, notif)"
+                  title="Archiver">
+            📦
+          </button>
+          <button class="notif-action-btn danger"
+                  (click)="supprimerNotif($event, notif)"
+                  title="Supprimer">
+            🗑
+          </button>
+        </div>
+      </div>
+
+      <!-- État vide -->
+      <div class="notif-empty" *ngIf="notifications.length === 0">
+        <p>Aucune notification</p>
+      </div>
+    </div>
+
+    <!-- 🆕 FOOTER : Lien vers la page complète -->
+   <!-- 🆕 FOOTER : Lien vers la page complète -->
+<div class="notif-footer" 
+     *ngIf="notifications.length > 10" 
+     (click)="goToAllNotifications()">
+  <span>Voir toutes les notifications ({{ notifications.length }})</span>
+  <span class="arrow">→</span>
+</div>
+
+  </div>
+</div>
+
+        <div class="admin-chip">
+          <div class="admin-info">
+            <p class="admin-name">{{ adminName }}</p>
+            <p class="admin-role">{{ adminRole }}</p>
+          </div>
+          <div class="admin-avatar">
+            {{ adminName | slice:0:2 | uppercase }}
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ===================== DASHBOARD ===================== -->
+    <ng-container *ngIf="activeRoute === 'dashboard'">
+
+      <!-- Stats Cards -->
+      <section class="stats-grid">
+        <div class="stat-card" *ngFor="let s of stats" [ngClass]="s.accentClass">
+          <div class="stat-icon-box">
+            <span class="stat-icon-emoji">
+              <ng-container [ngSwitch]="s.icon">
+                <span *ngSwitchCase="'users'">◎</span>
+                <span *ngSwitchCase="'briefcase'">▤</span>
+                <span *ngSwitchCase="'file'">✎</span>
+                <span *ngSwitchCase="'shield'">⌬</span>
+                <span *ngSwitchDefault>◆</span>
+              </ng-container>
+            </span>
+          </div>
+          <div class="stat-info">
+            <p class="stat-label">{{ s.label }}</p>
+            <p class="stat-value">{{ s.value }}</p>
+          </div>
+        </div>
+      </section>
+
+
+
+      <!-- Charts Grid -->
+     <!-- ===================== CHARTS GRID ===================== -->
+<section class="charts-grid">
+
+  <!-- Chart 1 : Candidatures (Bar) -->
+  <div class="chart-card">
+    <apx-chart
+      [series]="seriesCandidatures"
+      [chart]="chartConfigCandidatures"
+      [xaxis]="xaxisCandidatures"
+      [title]="titleCandidatures"
+      [subtitle]="subtitleCandidatures"
+      [dataLabels]="dataLabelsCandidatures"
+      [plotOptions]="plotOptionsCandidatures"
+      [colors]="['#f7931e', '#3b82f6', '#10b981', '#e2251b']">
+    </apx-chart>
+  </div>
+
+  <!-- Chart 2 : Rôles (Doughnut) -->
+  <div class="chart-card">
+    <apx-chart
+      [series]="seriesRoles"
+      [chart]="chartConfigRoles"
+      [labels]="labelsRoles"
+      [title]="titleRoles"
+      [subtitle]="subtitleRoles"
+      [legend]="legendRoles"
+      [dataLabels]="dataLabelsRoles"
+      [colors]="colorsRoles">
+    </apx-chart>
+  </div>
+
+</section>
+
+    </ng-container>
+
+    <!-- ===================== UTILISATEURS ===================== -->
+    <section class="table-card" *ngIf="activeRoute === 'utilisateurs' || activeRoute === 'dashboard'">
+      <div class="table-header">
+        <div>
+          <h2>Gestion des utilisateurs <span class="count-pill">{{ totalUsers }}</span></h2>
+          <p class="table-subtitle">Gérez les rôles et les accès à la plateforme</p>
+        </div>
+
+        <div class="table-actions">
+          <div class="search-box">
+            <span class="search-icon">⌕</span>
+            <input type="text" placeholder="Rechercher..." [(ngModel)]="searchTerm" (ngModelChange)="onSearchChange()">
+          </div>
+
+          <select class="role-select" [(ngModel)]="selectedRole" (ngModelChange)="onRoleChange()">
+            <option *ngFor="let r of roleFilters" [value]="r.value">{{ r.label }}</option>
+          </select>
+
+          <div class="export-group">
+            <button class="btn-export" (click)="onExport()">CSV</button>
+            <button class="btn-export" (click)="onExportExcel()">Excel</button>
+            <button class="btn-export" (click)="onExportPDF()">PDF</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table class="users-table">
+          <thead>
+            <tr>
+              <th>Nom</th>
+              <th>Email</th>
+              <th>Rôle</th>
+              <th>Téléphone</th>
+              <th>Statut</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container *ngIf="!usersLoading; else usersSkeleton">
+              <tr *ngFor="let user of pagedUsers">
+                <td>
+                  <div class="user-cell">
+                    <span class="avatar-initials">{{ initials(user) }}</span>
+                    <span>{{ user.firstName }} {{ user.lastName }}</span>
+                  </div>
+                </td>
+                <td class="muted">{{ user.email }}</td>
+                <td>
+                  <span class="role-badge" [ngClass]="roleBadgeClass(user.role)">{{ roleLabel(user.role) }}</span>
+                </td>
+                <td class="muted">{{ user.phone || '—' }}</td>
+                <td>
+                  <span class="status-dot" [class.online]="user.actif"></span>
+                  {{ user.actif ? 'Actif' : 'Inactif' }}
+                </td>
+                <td>
+                  <div class="row-actions">
+                    <button *ngIf="!user.role" class="row-btn edit" (click)="onAssignRole(user)">Attribuer rôle</button>
+                    <button *ngIf="(user.role === 'STAGIAIRE' || user.role === 'EMPLOYE') && !isWhatsappEnvoye(user.id)"
+                            class="row-btn whatsapp" (click)="envoyerWhatsAppApresRole(user)">
+                      Envoyer WhatsApp
+                    </button>
+                    <span *ngIf="user.role && isWhatsappEnvoye(user.id)" class="badge-whatsapp-envoye">WhatsApp envoyé</span>
+                    <button class="row-btn edit" (click)="onEditUser(user)">Modifier</button>
+                    <button class="row-btn delete" (click)="onDeleteUser(user)">Supprimer</button>
+                  </div>
+                </td>
+              </tr>
+            </ng-container>
+            <ng-template #usersSkeleton>
+              <tr *ngFor="let i of [1,2,3,4,5]">
+                <td colspan="6"><div class="skeleton-line w100"></div></td>
+              </tr>
+            </ng-template>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="table-footer">
+        <div class="page-size">
+          Afficher
+   <select 
+  class="role-select" 
+  [(ngModel)]="pageSize" 
+  (ngModelChange)="onPageSizeChange()">
+  <option [value]="5">5</option>
+  <option [value]="10">10</option>
+  <option [value]="25">25</option>
+</select>
+          entrées
+        </div>
+        <div class="pagination">
+          <button class="page-btn" (click)="goToPage(1)" [disabled]="currentPage === 1">«</button>
+          <button class="page-btn" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">‹</button>
+          <button class="page-btn" *ngFor="let p of pageNumbers" [class.active]="p === currentPage" (click)="goToPage(p)">{{ p }}</button>
+          <button class="page-btn" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">›</button>
+          <button class="page-btn" (click)="goToPage(totalPages)" [disabled]="currentPage === totalPages">»</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== OFFRES ===================== -->
+    <section class="table-card" *ngIf="activeRoute === 'offres'">
+      <div class="table-header">
+        <h2>Offres <span class="count-pill">{{ offres.length }}</span></h2>
+      </div>
+      <div class="table-wrap">
+        <table class="users-table">
+          <thead>
+            <tr><th>Titre</th><th>Département</th><th>Statut</th><th>Publiée le</th><th>Actions</th></tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let o of offres">
+              <td class="fw600">{{ o.titre }}</td>
+              <td class="muted">{{ o.departement || '—' }}</td>
+              <td><span class="role-badge" [ngClass]="{'badge-green': o.statut === 'OUVERTE'}">{{ o.statut }}</span></td>
+              <td class="muted">{{ o.datePublication || '—' }}</td>
+              <td><button class="row-btn delete" (click)="deleteOffre(o)">Supprimer</button></td>
+            </tr>
+            <tr *ngIf="offres.length === 0"><td colspan="5" class="empty-row">Aucune offre.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+   <!-- ===================== CANDIDATURES ===================== -->
+<section class="table-card" *ngIf="activeRoute === 'candidatures'">
+  <div class="table-header">
+    <h2>Candidatures <span class="count-pill">{{ filteredCandidatures.length }}</span></h2>
+  </div>
+  <div class="table-wrap">
+    <table class="users-table">
+      <thead>
+        <tr><th>Candidat</th><th>Offre</th><th>Statut</th></tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let c of pagedCandidatures">
+          <td class="fw600">{{ c.candidat?.prenom }} {{ c.candidat?.nom }}</td>
+          <td class="muted">{{ c.offre?.titre }}</td>
+          <td>
+            <span class="role-badge"
+                  [ngClass]="{'badge-orange': c.statut === 'EN_ATTENTE','badge-green': c.statut === 'ACCEPTE','badge-red': c.statut === 'REFUSE'}">
+              {{ c.statut }}
+            </span>
+          </td>
+        </tr>
+        <tr *ngIf="filteredCandidatures.length === 0">
+          <td colspan="3" class="empty-row">Aucune candidature.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination Candidatures -->
+  <div class="table-footer" *ngIf="filteredCandidatures.length > 0">
+    <div class="page-size">
+      Afficher
+      <select class="role-select"
+              [(ngModel)]="candidaturesPageSize"
+              (ngModelChange)="onCandidaturesPageSizeChange()">
+        <option [value]="5">5</option>
+        <option [value]="10">10</option>
+        <option [value]="25">25</option>
+      </select>
+      entrées
+    </div>
+    <div class="pagination">
+      <button class="page-btn" (click)="goToCandidaturesPage(1)" [disabled]="candidaturesCurrentPage === 1">«</button>
+      <button class="page-btn" (click)="goToCandidaturesPage(candidaturesCurrentPage - 1)" [disabled]="candidaturesCurrentPage === 1">‹</button>
+      <button class="page-btn"
+              *ngFor="let p of candidaturesPageNumbers"
+              [class.active]="p === candidaturesCurrentPage"
+              (click)="goToCandidaturesPage(p)">{{ p }}</button>
+      <button class="page-btn" (click)="goToCandidaturesPage(candidaturesCurrentPage + 1)" [disabled]="candidaturesCurrentPage === candidaturesTotalPages">›</button>
+      <button class="page-btn" (click)="goToCandidaturesPage(candidaturesTotalPages)" [disabled]="candidaturesCurrentPage === candidaturesTotalPages">»</button>
+    </div>
+  </div>
+</section>
+
+    <!-- ===================== LOGS ===================== -->
+    <!-- ===================== LOGS ===================== -->
+<section class="table-card" *ngIf="activeRoute === 'logs'">
+  <div class="table-header">
+    <h2>Logs d'audit <span class="count-pill">{{ filteredLogs.length }}</span></h2>
+  </div>
+  <div class="table-wrap">
+    <table class="users-table">
+      <thead>
+        <tr><th>Utilisateur</th><th>Action</th><th>Entité</th><th>Date</th></tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let l of pagedLogs">
+          <td class="fw600">{{ l.utilisateur?.email || '—' }}</td>
+          <td class="muted">{{ l.action }}</td>
+          <td class="muted">{{ l.entiteConcernee }}</td>
+          <td class="muted">{{ l.dateAction | date:'dd/MM/yyyy HH:mm' }}</td>
+        </tr>
+        <tr *ngIf="filteredLogs.length === 0">
+          <td colspan="4" class="empty-row">Aucun log.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination Logs -->
+  <div class="table-footer" *ngIf="filteredLogs.length > 0">
+    <div class="page-size">
+      Afficher
+      <select class="role-select"
+              [(ngModel)]="logsPageSize"
+              (ngModelChange)="onLogsPageSizeChange()">
+        <option [value]="5">5</option>
+        <option [value]="10">10</option>
+        <option [value]="25">25</option>
+      </select>
+      entrées
+    </div>
+    <div class="pagination">
+      <button class="page-btn" (click)="goToLogsPage(1)" [disabled]="logsCurrentPage === 1">«</button>
+      <button class="page-btn" (click)="goToLogsPage(logsCurrentPage - 1)" [disabled]="logsCurrentPage === 1">‹</button>
+      <button class="page-btn"
+              *ngFor="let p of logsPageNumbers"
+              [class.active]="p === logsCurrentPage"
+              (click)="goToLogsPage(p)">{{ p }}</button>
+      <button class="page-btn" (click)="goToLogsPage(logsCurrentPage + 1)" [disabled]="logsCurrentPage === logsTotalPages">›</button>
+      <button class="page-btn" (click)="goToLogsPage(logsTotalPages)" [disabled]="logsCurrentPage === logsTotalPages">»</button>
+    </div>
+  </div>
+</section>
+
+    <!-- Panneaux embarqués -->
+    <section class="embedded-panel" *ngIf="activeRoute === 'parametres'">
+      <app-parametres (back)="setRoute('utilisateurs')"></app-parametres>
+    </section>
+    <section class="embedded-panel" *ngIf="activeRoute === 'roles'">
+      <app-roles-permissions (back)="setRoute('utilisateurs')"></app-roles-permissions>
+    </section>
+    <section class="embedded-panel" *ngIf="activeRoute === 'notifications'">
+      <app-notifications (back)="setRoute('utilisateurs')"></app-notifications>
+    </section>
+
+  </main>
+
+  <!-- MODAL UTILISATEUR -->
+  <div class="modal-overlay" *ngIf="showUserModal" (click)="closeUserModal()">
+    <div class="modal-box" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>{{ assigningRoleUserId ? "Attribuer un rôle" : "Modifier l'utilisateur" }}</h3>
+        <button class="modal-close-btn" (click)="closeUserModal()">Fermer</button>
+      </div>
+
+      <div class="modal-error" *ngIf="modalError">{{ modalError }}</div>
+
+      <div class="form-grid" *ngIf="assigningRoleUserId">
+        <div class="form-field full">
+          <p><strong>Utilisateur :</strong> {{ userForm.prenom }} {{ userForm.nom }}</p>
+          <p><strong>Email :</strong> {{ userForm.email }}</p>
+          <p><strong>Téléphone :</strong> {{ userForm.telephone || 'Non renseigné' }}</p>
+        </div>
+        <div class="form-field full">
+          <label>Rôle à attribuer *</label>
+          <select [(ngModel)]="userForm.role">
+            <option *ngFor="let r of assignableRoles" [value]="r">{{ roleLabel(r) }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-grid" *ngIf="!assigningRoleUserId">
+        <div class="form-field">
+          <label>Prénom *</label>
+          <input type="text" [(ngModel)]="userForm.prenom">
+        </div>
+        <div class="form-field">
+          <label>Nom *</label>
+          <input type="text" [(ngModel)]="userForm.nom">
+        </div>
+        <div class="form-field full">
+          <label>Email *</label>
+          <input type="email" [(ngModel)]="userForm.email">
+        </div>
+        <div class="form-field">
+          <label>Téléphone</label>
+          <input type="text" [(ngModel)]="userForm.telephone">
+        </div>
+        <div class="form-field">
+          <label>N° CIN</label>
+          <input type="text" [(ngModel)]="userForm.numeroCin">
+        </div>
+        <div class="form-field full">
+          <label>Adresse</label>
+          <input type="text" [(ngModel)]="userForm.adresse">
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-outline" (click)="closeUserModal()">Annuler</button>
+        <button class="btn-primary" (click)="assigningRoleUserId ? confirmAssignRole() : saveUser()" [disabled]="savingUser">
+          {{ savingUser ? 'Enregistrement...' : (assigningRoleUserId ? 'Attribuer le rôle' : 'Enregistrer') }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast-container" *ngIf="showToast">
+    <div class="toast" [ngClass]="getToastClass()">
+      <span class="toast-icon">{{ getToastIcon() }}</span>
+      <span class="toast-message">{{ toastMessage }}</span>
+      <button class="toast-close" (click)="closeToast()">✕</button>
+    </div>
+  </div>
+
+</div>

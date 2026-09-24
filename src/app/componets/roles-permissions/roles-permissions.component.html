@@ -1,0 +1,133 @@
+
+<div class="page-container">
+
+
+  <!-- STATISTIQUES -->
+  <div class="stats-grid" *ngIf="!loading">
+    <div class="stat-card">
+      <div class="stat-content">
+        <span class="stat-value">{{ totalUsers }}</span>
+        <span class="stat-label">Utilisateurs</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-content">
+        <span class="stat-value">{{ totalRoles }}</span>
+        <span class="stat-label">Rôles</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-content">
+        <span class="stat-value">{{ totalPermissions }}</span>
+        <span class="stat-label">Permissions</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHARGEMENT -->
+  <div class="loading-container" *ngIf="loading">
+    <div class="spinner"></div>
+    <p>Chargement des données...</p>
+  </div>
+
+  <!-- ERREUR -->
+  <div class="error-container" *ngIf="errorMessage && !loading">
+    <p>{{ errorMessage }}</p>
+    <button class="btn btn-primary" (click)="reloadData()">Réessayer</button>
+  </div>
+
+  <!-- CONTENU PRINCIPAL -->
+  <div class="page-content" *ngIf="!loading && !errorMessage">
+
+    <!-- ROLES -->
+    <div class="card">
+      <div class="card-header">
+        <h2>Liste des rôles</h2>
+        <span class="badge">{{ roles.length }} rôles</span>
+      </div>
+      
+      <div class="roles-grid">
+        <div class="role-card" *ngFor="let role of roles">
+          <div class="role-header">
+            <div class="role-info">
+              <div class="role-avatar" [style.background-color]="role.color">
+                {{ getRoleInitials(role.name) }}
+              </div>
+              <div>
+                <h3>{{ role.name }}</h3>
+                <span class="role-users">{{ role.userCount || 0 }} utilisateur(s)</span>
+              </div>
+            </div>
+            <button class="btn-icon" (click)="editRole(role.name)" title="Modifier les permissions">
+              ✏️
+            </button>
+          </div>
+          
+          <p class="role-description">{{ role.description }}</p>
+          
+          <div class="role-permissions">
+            <span class="permission-tag" *ngFor="let perm of role.permissions">
+              {{ perm }}
+            </span>
+          </div>
+          
+          <div class="role-footer">
+            <span class="permission-count">{{ role.permissions.length }} permissions</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PERMISSIONS -->
+    <div class="card permissions-card">
+      <div class="card-header">
+        <h2>Liste des permissions</h2>
+        <span class="badge">{{ allPermissions.length }} permissions</span>
+      </div>
+      
+      <div class="permissions-list">
+        <div class="permission-group" *ngFor="let category of getCategories()">
+          <h4>{{ category }}</h4>
+          <div class="permission-items">
+            <div class="permission-item" *ngFor="let perm of getPermissionsByCategory(category)">
+              <span class="permission-dot" [style.background-color]="getPermissionColor(perm)"></span>
+              <div class="permission-info">
+                <span class="permission-name">{{ perm.label }}</span>
+                <span class="permission-desc" *ngIf="perm.description">{{ perm.description }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL -->
+  <div class="modal-overlay" *ngIf="showEditModal" (click)="closeModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Modifier les permissions</h3>
+        <button class="close-btn" (click)="closeModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <p>Rôle : <strong>{{ selectedRole }}</strong></p>
+        <div class="permissions-grid">
+          <label class="checkbox-item" *ngFor="let perm of allPermissions">
+            <input type="checkbox" [checked]="isPermissionEnabled(perm)" />
+            <div class="checkbox-content">
+              <span class="checkbox-label">{{ perm.label }}</span>
+              <span class="checkbox-desc" *ngIf="perm.description">{{ perm.description }}</span>
+            </div>
+          </label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeModal()">Annuler</button>
+        <button class="btn btn-primary" (click)="saveRolePermissions()" [disabled]="saving">
+          {{ saving ? 'Enregistrement...' : 'Enregistrer' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>

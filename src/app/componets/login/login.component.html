@@ -1,0 +1,510 @@
+<div class="auth-shell">
+
+  <!-- =========================
+       LEFT SIDE - LOGIN
+       ========================= -->
+  <section class="auth-form-col">
+
+    <form
+      class="auth-form"
+      [formGroup]="form"
+      (ngSubmit)="submit()"
+    >
+
+      <!-- LOGO -->
+    <a routerLink="/" class="brand">
+  <img
+    src="assets/images/attijari-logo.png"
+    alt="Attijari Bank - Workspace"
+    class="brand-logo"
+  />
+</a>
+
+      <!-- TITLE -->
+      <div class="welcome">
+        <span>Bienvenue sur</span>
+        <h1>Attijari <strong>Workspace</strong></h1>
+      </div>
+
+      <p class="sub">
+        Connectez-vous à votre espace collaborateur
+        en toute sécurité.
+      </p>
+
+
+      <!-- ================= EMAIL ================= -->
+      <div class="field">
+
+        <label for="email">
+          Adresse e-mail
+        </label>
+
+        <div class="input-wrapper">
+
+          <svg
+            class="input-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            placeholder="Entrez votre adresse e-mail"
+            autocomplete="email"
+          >
+
+        </div>
+
+        <div
+          class="field-error"
+          *ngIf="
+            form.get('email')?.touched &&
+            form.get('email')?.invalid
+          "
+        >
+          Adresse e-mail invalide.
+        </div>
+
+      </div>
+
+
+      <!-- ================= PASSWORD ================= -->
+      <div class="field">
+
+        <label for="password">
+          Mot de passe
+        </label>
+
+        <div class="input-wrapper">
+
+          <svg
+            class="input-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect
+              x="3"
+              y="11"
+              width="18"
+              height="10"
+              rx="2"
+            />
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+
+          <input
+            id="password"
+            [type]="showPassword ? 'text' : 'password'"
+            formControlName="motDePasse"
+            placeholder="Entrez votre mot de passe"
+            autocomplete="current-password"
+          >
+
+          <!-- EYE BUTTON -->
+          <button
+            type="button"
+            class="toggle-password"
+            (click)="togglePasswordVisibility()"
+            aria-label="Afficher ou masquer le mot de passe"
+          >
+
+            <!-- Eye -->
+            <svg
+              *ngIf="!showPassword"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"
+              />
+              <circle
+                cx="12"
+                cy="12"
+                r="3"
+              />
+            </svg>
+
+            <!-- Eye OFF -->
+            <svg
+              *ngIf="showPassword"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M17.94 17.94A10.07 10.07 0 0 1 12 20C5 20 1 12 1 12a18.5 18.5 0 0 1 5.06-5.94"
+              />
+
+              <path
+                d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"
+              />
+
+              <path
+                d="M14.12 14.12a3 3 0 1 1-4.24-4.24"
+              />
+
+              <line
+                x1="1"
+                y1="1"
+                x2="23"
+                y2="23"
+              />
+            </svg>
+
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <!-- ================= FORGOT PASSWORD ================= -->
+      <div class="forgot-row">
+        <a routerLink="/mot-de-passe-oublie">
+          Mot de passe oublié ?
+        </a>
+      </div>
+
+
+      <!-- ================= ERROR ================= -->
+      <div
+        class="login-error"
+        *ngIf="erreur"
+      >
+        {{ erreur }}
+      </div>
+
+
+      <!-- ================= LOGIN BUTTON ================= -->
+      <button
+        class="btn-primary"
+        type="submit"
+        [disabled]="chargement || form.invalid"
+      >
+
+        <span>
+          {{ chargement ? 'Connexion...' : 'Se connecter' }}
+        </span>
+
+        <svg
+          *ngIf="!chargement"
+          class="button-arrow"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <line
+            x1="5"
+            y1="12"
+            x2="19"
+            y2="12"
+          />
+
+          <polyline
+            points="12 5 19 12 12 19"
+          />
+        </svg>
+
+      </button>
+
+
+      <!-- ================= SIGN UP ================= -->
+      <p class="foot-note">
+        Pas encore de compte ?
+        <a routerLink="/signup">
+          Créer un compte
+        </a>
+      </p>
+
+    </form>
+
+  </section>
+
+
+
+  <!-- =========================
+       RIGHT SIDE - VISUAL
+       ========================= -->
+  <section class="auth-visual">
+
+    <!-- GLOW -->
+    <div class="glow glow-one"></div>
+    <div class="glow glow-two"></div>
+
+    <!-- BACKGROUND GRID -->
+    <div class="visual-grid"></div>
+
+
+    <!-- ================= SECURITY ILLUSTRATION ================= -->
+    <div class="security-visual">
+
+      <div class="security-platform platform-one"></div>
+      <div class="security-platform platform-two"></div>
+
+      <div class="security-icon">
+
+        <svg
+          viewBox="0 0 120 120"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+
+          <!-- Shield -->
+          <path
+            d="
+              M60 10
+              L98 24
+              V53
+              C98 78 82 99 60 109
+              C38 99 22 78 22 53
+              V24
+              L60 10Z
+            "
+            stroke="url(#shieldGradient)"
+            stroke-width="5"
+          />
+
+          <!-- Lock -->
+          <rect
+            x="42"
+            y="51"
+            width="36"
+            height="30"
+            rx="7"
+            fill="url(#lockGradient)"
+          />
+
+          <!-- Lock top -->
+          <path
+            d="
+              M49 51
+              V43
+              C49 36.9 53.9 32 60 32
+              C66.1 32 71 36.9 71 43
+              V51
+            "
+            stroke="#FFB52D"
+            stroke-width="5"
+            stroke-linecap="round"
+          />
+
+          <!-- Keyhole -->
+          <circle
+            cx="60"
+            cy="65"
+            r="4"
+            fill="#171717"
+          />
+
+          <defs>
+
+            <linearGradient
+              id="shieldGradient"
+              x1="20"
+              y1="10"
+              x2="100"
+              y2="110"
+            >
+              <stop
+                offset="0"
+                stop-color="#FFB52D"
+              />
+
+              <stop
+                offset="1"
+                stop-color="#F22B2B"
+              />
+            </linearGradient>
+
+            <linearGradient
+              id="lockGradient"
+              x1="40"
+              y1="50"
+              x2="80"
+              y2="82"
+            >
+              <stop
+                offset="0"
+                stop-color="#FFB52D"
+              />
+
+              <stop
+                offset="1"
+                stop-color="#F2382F"
+              />
+            </linearGradient>
+
+          </defs>
+
+        </svg>
+
+      </div>
+
+    </div>
+
+
+    <!-- ================= TEXT ================= -->
+    <div class="visual-content">
+  <h2>
+  Un accès unique,
+  <span>six univers</span>
+</h2>
+
+<p>
+  RH, encadrants, stagiaires, administration,
+  responsables de formation et responsables de service
+  retrouvent chacun leur espace dédié dans un seul
+  environnement sécurisé.
+    </p>
+  </div>
+
+
+    <!-- ================= FEATURES ================= -->
+  <div class="visual-features">
+
+  <!-- RH -->
+  <div class="feature">
+    <div class="feature-icon">
+      <svg viewBox="0 0 24 24"
+           fill="none"
+           stroke="currentColor"
+           stroke-width="1.7"
+           stroke-linecap="round"
+           stroke-linejoin="round">
+        <circle cx="9" cy="7" r="4"/>
+        <path d="M2 21v-2a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5v2"/>
+        <path d="M16 3.5a4 4 0 0 1 0 7.5"/>
+        <path d="M19 14a5 5 0 0 1 3 5v2"/>
+      </svg>
+    </div>
+    <span>RH</span>
+  </div>
+
+  <!-- ENCADRANTS -->
+  <div class="feature">
+    <div class="feature-icon">
+      <svg viewBox="0 0 24 24"
+           fill="none"
+           stroke="currentColor"
+           stroke-width="1.7"
+           stroke-linecap="round"
+           stroke-linejoin="round">
+        <circle cx="9" cy="7" r="4"/>
+        <path d="M2 21v-2a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5v2"/>
+        <path d="M16 11l2 2 4-4"/>
+      </svg>
+    </div>
+    <span>Encadrants</span>
+  </div>
+
+  <!-- STAGIAIRES -->
+  <div class="feature">
+    <div class="feature-icon">
+      <svg viewBox="0 0 24 24"
+           fill="none"
+           stroke="currentColor"
+           stroke-width="1.7"
+           stroke-linecap="round"
+           stroke-linejoin="round">
+        <path d="M4 4h16v11H4z"/>
+        <path d="M8 20h8"/>
+        <path d="M12 15v5"/>
+        <path d="M8 8h8"/>
+        <path d="M8 11h5"/>
+      </svg>
+    </div>
+    <span>Stagiaires</span>
+  </div>
+
+  <!-- ADMINISTRATION -->
+  <div class="feature">
+    <div class="feature-icon">
+      <svg viewBox="0 0 24 24"
+           fill="none"
+           stroke="currentColor"
+           stroke-width="1.7"
+           stroke-linecap="round"
+           stroke-linejoin="round">
+        <rect x="4" y="3" width="16" height="18" rx="2"/>
+        <path d="M8 7h2"/>
+        <path d="M14 7h2"/>
+        <path d="M8 11h2"/>
+        <path d="M14 11h2"/>
+        <path d="M8 15h2"/>
+        <path d="M14 15h2"/>
+      </svg>
+    </div>
+    <span>Administration</span>
+  </div>
+
+  <!-- RESPONSABLES DE FORMATION -->
+  <div class="feature">
+    <div class="feature-icon">
+      <svg viewBox="0 0 24 24"
+           fill="none"
+           stroke="currentColor"
+           stroke-width="1.7"
+           stroke-linecap="round"
+           stroke-linejoin="round">
+        <path d="M4 5h16v12H4z"/>
+        <path d="M8 21h8"/>
+        <path d="M12 17v4"/>
+        <path d="M8 9h8"/>
+        <path d="M8 12h5"/>
+      </svg>
+    </div>
+    <span>Responsables de formation</span>
+  </div>
+
+  <!-- RESPONSABLES DE SERVICE -->
+  <div class="feature">
+    <div class="feature-icon">
+      <svg viewBox="0 0 24 24"
+           fill="none"
+           stroke="currentColor"
+           stroke-width="1.7"
+           stroke-linecap="round"
+           stroke-linejoin="round">
+        <path d="M3 3v18h18"/>
+        <path d="M7 16l4-5 3 3 5-7"/>
+      </svg>
+    </div>
+    <span>Responsables de service</span>
+  </div>
+
+</div>
+
+
+    <!-- ================= WAVES ================= -->
+    <div class="waves">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+
+  </section>
+
+</div>

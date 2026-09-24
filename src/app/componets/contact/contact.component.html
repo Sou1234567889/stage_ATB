@@ -1,0 +1,207 @@
+<!-- ============ NAVBAR ============ -->
+<nav class="page-navbar">
+  <a routerLink="/" class="nav-brand">
+    <img src="assets/images/attijari-logo.png" alt="Attijari Bank" class="nav-logo">
+   
+  </a>
+
+  <ul class="nav-menu">
+    <li><a routerLink="/" class="nav-link">Accueil</a></li>
+    <li><a routerLink="/a-propos" class="nav-link">À propos</a></li>
+    <li><a routerLink="/services" class="nav-link">Services</a></li>
+    <li><a routerLink="/ressources" class="nav-link">Ressources</a></li>
+    <li><a routerLink="/contact" class="nav-link active">Contact</a></li>
+  </ul>
+
+  <a routerLink="/login" class="btn-login">
+    <span class="btn-login-icon">👤</span> Se connecter
+  </a>
+</nav>
+
+<!-- ============ HERO ============ -->
+<section class="page-hero">
+  <div class="page-hero-overlay"></div>
+  <div class="page-hero-content">
+    <p class="page-eyebrow">✦ Contact</p>
+    <h1>Parlons de votre <span class="highlight">projet</span></h1>
+    <p class="page-subtitle">
+      Notre équipe est à votre disposition pour répondre à toutes 
+      vos questions.
+    </p>
+  </div>
+</section>
+
+<!-- ============ CONTACT ============ -->
+<section class="content-section">
+  <div class="container">
+
+    <div class="contact-grid">
+
+      <!-- Colonne infos -->
+      <div class="contact-info">
+        <div class="section-line"></div>
+        <h2>Coordonnées</h2>
+
+        <div class="info-item">
+          <div class="info-icon">📍</div>
+          <div>
+            <h3>Adresse</h3>
+            <p>Av. Habib Bourguiba, Tunis 1000, Tunisie</p>
+          </div>
+        </div>
+
+        <div class="info-item">
+          <div class="info-icon">📞</div>
+          <div>
+            <h3>Téléphone</h3>
+            <p>+216 71 111 300</p>
+          </div>
+        </div>
+
+        <div class="info-item">
+          <div class="info-icon">📧</div>
+          <div>
+            <h3>Email</h3>
+            <p>contact&#64;attijaribank.tn</p>
+          </div>
+        </div>
+
+        <div class="info-item">
+          <div class="info-icon">🕐</div>
+          <div>
+            <h3>Horaires</h3>
+            <p>Lun-Ven : 8h00 - 17h00</p>
+            <p>Sam : 8h00 - 12h00</p>
+          </div>
+        </div>
+
+        <div class="social-row">
+          <a href="#" class="social-btn">FB</a>
+          <a href="#" class="social-btn">IN</a>
+          <a href="#" class="social-btn">TW</a>
+        </div>
+      </div>
+
+      <!-- Colonne formulaire -->
+      <div class="contact-form-wrapper">
+        <div class="section-line"></div>
+        <h2>Envoyez-nous un message</h2>
+
+        <form class="contact-form" (ngSubmit)="envoyerMessage()">
+
+          <div class="form-row">
+            <div class="form-field">
+              <label>Nom complet *</label>
+              <input type="text" [(ngModel)]="formData.nom" name="nom" required>
+            </div>
+
+            <div class="form-field">
+              <label>Email *</label>
+              <input type="email" [(ngModel)]="formData.email" name="email" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label>Téléphone</label>
+              <input type="tel" [(ngModel)]="formData.telephone" name="telephone">
+            </div>
+
+            <div class="form-field">
+              <label>Sujet *</label>
+              <select [(ngModel)]="formData.sujet" name="sujet" required>
+                <option value="">Choisir un sujet...</option>
+                <option value="candidature">Candidature</option>
+                <option value="stage">Stage</option>
+                <option value="information">Information générale</option>
+                <option value="autre">Autre</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-field full">
+            <label>Votre message *</label>
+            <textarea rows="6" [(ngModel)]="formData.message" name="message"
+                      placeholder="Décrivez votre demande..." required></textarea>
+          </div>
+
+          <button type="submit" class="btn-hero-cta">
+            Envoyer le message →
+          </button>
+
+        </form>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ MAP / CTA ============ -->
+<section class="cta-section">
+  <div class="cta-content">
+    <h2>Vous cherchez un stage ou un emploi ?</h2>
+    <p>Consultez directement nos offres disponibles</p>
+    <a routerLink="/" fragment="offres-section" class="btn-hero-cta">
+  Voir les offres →
+</a>
+  </div>
+</section>
+
+<footer class="public-footer">
+  <div class="footer-content">
+
+    <div class="footer-col footer-brand">
+      <div class="footer-logo-wrap">
+        <img src="assets/images/attijari-logo.png" alt="Attijari Bank" class="footer-logo">
+      </div>
+      <p class="footer-description">
+        Plateforme de gestion des stages et de suivi des talents 
+        de la banque Attijari.
+      </p>
+      <div class="footer-socials">
+        <a href="#" class="social-btn" aria-label="Facebook">FB</a>
+        <a href="#" class="social-btn" aria-label="LinkedIn">IN</a>
+        <a href="#" class="social-btn" aria-label="Twitter">TW</a>
+      </div>
+    </div>
+
+    <div class="footer-col">
+      <h4 class="footer-title">Découvrir</h4>
+      <ul class="footer-links">
+  <li><a routerLink="/a-propos">À propos</a></li>
+  <li><a routerLink="/services">Services</a></li>
+  <li><a routerLink="/offres">Emploi &amp; Carrière</a></li>
+</ul>
+    </div>
+
+    <div class="footer-col">
+      <h4 class="footer-title">Espace</h4>
+      <ul class="footer-links">
+        <li><a routerLink="/login">Se connecter</a></li>
+        <li><a routerLink="/signup">S'inscrire</a></li>
+        
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h4 class="footer-title">Centre de Relation Client</h4>
+      <p class="footer-contact-text">
+        Besoin d'informations ou d'assistance ?
+      </p>
+      <a href="tel:71111300" class="footer-phone">
+        📞 71 111 300
+      </a>
+    </div>
+
+  </div>
+
+  <div class="footer-bottom">
+    <p>© 2026 Attijari Bank — Tous droits réservés.</p>
+    <div class="footer-bottom-links">
+      <a href="#">Confidentialité</a>
+      <a href="#">Politique Cookies</a>
+      <a href="#">Plan du site</a>
+    </div>
+  </div>
+</footer>

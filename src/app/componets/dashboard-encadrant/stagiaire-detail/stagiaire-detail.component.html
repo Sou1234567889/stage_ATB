@@ -1,0 +1,390 @@
+<div class="detail-wrapper">
+
+  <!-- ============================================
+       HEADER
+       ============================================ -->
+  <div class="stagiaire-header-card">
+    <button class="btn-retour" (click)="fermer()">← Retour</button>
+
+    <div class="stagiaire-info">
+      <div class="stagiaire-avatar">{{ getInitiales() }}</div>
+      <div>
+        <h2>{{ getNomComplet() }}</h2>
+        <p class="muted">{{ stagiaire.email }}</p>
+        <p class="muted">Offre : <strong>{{ stagiaire.offreTitre }}</strong></p>
+      </div>
+    </div>
+
+    <span class="role-badge" [ngClass]="{
+      'badge-blue': stagiaire.statut === 'ACCEPTE',
+      'badge-orange': stagiaire.statut === 'EN_ANALYSE',
+      'badge-purple': stagiaire.statut === 'ENTRETIEN_PLANIFIE',
+      'badge-red': stagiaire.statut === 'REFUSE',
+      'badge-gray': !stagiaire.statut
+    }">
+      {{ stagiaire.statut }}
+    </span>
+  </div>
+
+  <!-- ============================================
+       TABS
+       ============================================ -->
+  <nav class="tabs">
+    <button [class.active]="activeTab === 'heures'" (click)="setTab('heures')">Heures travaillées</button>
+    <button [class.active]="activeTab === 'rapports'" (click)="setTab('rapports')">Travaux déposés</button>
+    <button [class.active]="activeTab === 'chat'" (click)="setTab('chat')">Chat</button>
+    <button [class.active]="activeTab === 'meet'" (click)="setTab('meet'); ouvrirApercuMeet()">Visioconférence</button>
+  </nav>
+
+  <!-- ============================================
+       TAB : HEURES
+       ============================================ -->
+  <section class="tab-content" *ngIf="activeTab === 'heures'">
+    <div class="heures-card">
+      <h3>Progression du stage</h3>
+      <div class="heures-progress">
+        <div class="heures-bar">
+          <div class="heures-fill" [style.width.%]="getPourcentageHeures()"></div>
+        </div>
+        <p class="heures-label">
+          <strong>{{ heuresTravaillees }}h</strong> / {{ heuresObjectif }}h
+          <span class="heures-pct">({{ getPourcentageHeures() }}%)</span>
+        </p>
+        <p class="heures-restantes" *ngIf="heuresObjectif - heuresTravaillees > 0">
+          ⏳ {{ heuresObjectif - heuresTravaillees }}h restantes
+        </p>
+        <p class="heures-complete" *ngIf="heuresObjectif - heuresTravaillees <= 0">
+          🎉 Objectif atteint !
+        </p>
+      </div>
+
+      <button
+        class="btn-primary"
+        (click)="pointerHeures()"
+        [disabled]="pointageEnCours || heuresTravaillees >= heuresObjectif">
+        <span *ngIf="!pointageEnCours">Pointer +8h</span>
+        <span *ngIf="pointageEnCours">⏳ Enregistrement...</span>
+      </button>
+
+      <p class="pointage-info" *ngIf="heuresTravaillees >= heuresObjectif">
+        Objectif atteint — impossible de pointer plus
+      </p>
+    </div>
+  </section>
+
+  <!-- ============================================
+       TAB : RAPPORTS / TRAVAUX
+       ============================================ -->
+  <section class="tab-content" *ngIf="activeTab === 'rapports'">
+    <div class="rapports-card">
+      <div class="rapports-header">
+        <h3>Travaux déposés par {{ stagiaire.prenom }}</h3>
+      </div>
+
+      <div class="chat-empty" *ngIf="loadingTravaux">
+        <p>Chargement...</p>
+      </div>
+
+      <div class="rapports-list" *ngIf="!loadingTravaux">
+        <div class="rapport-item" *ngFor="let l of travaux">
+          <div class="rapport-icon">V{{ l.version }}</div>
+          <div class="rapport-info">
+            <p class="rapport-nom">{{ l.titre }}</p>
+            <p class="rapport-meta">{{ l.description }}</p>
+            <p class="rapport-meta">Déposé le {{ l.dateSoumission | date:'dd/MM/yyyy HH:mm' }}</p>
+            <p class="rapport-meta" *ngIf="l.commentaireEncadrant">💬 {{ l.commentaireEncadrant }}</p>
+          </div>
+          <span class="rapport-statut" [ngClass]="statutTravailClass(l.statut)">
+            {{ statutTravailLabel(l.statut) }}
+          </span>
+          <div class="rapport-actions">
+            <button class="row-btn edit" (click)="voirApercu(l)">👁️ Aperçu</button>
+            <button class="row-btn edit" (click)="telechargerTravail(l)" *ngIf="l.fichierUrl">📥 Télécharger</button>
+            <button class="row-btn edit" (click)="ouvrirRevision(l)">✏️ Réviser</button>
+          </div>
+        </div>
+
+        <div class="chat-empty" *ngIf="travaux.length === 0">
+          <p>Aucun travail déposé pour le moment.</p>
+        </div>
+      </div>
+
+      <!-- ===== Panneau de révision ===== -->
+      <div class="heures-card" *ngIf="livrableEnRevision" style="margin-top: 16px;">
+        <h3>Réviser « {{ livrableEnRevision.titre }} »</h3>
+
+        <textarea
+          style="width:100%; min-height:80px; margin: 10px 0; padding:10px; border-radius:8px; border:1px solid #ddd;"
+          placeholder="Votre remarque pour le stagiaire (obligatoire si modification demandée)..."
+          [(ngModel)]="commentaireRevision"
+        ></textarea>
+
+        <!-- Upload d'un fichier de correction (optionnel) -->
+        <div style="margin: 10px 0;">
+          <label style="display:block; font-size: 13px; color: #666; margin-bottom: 6px;">
+            📎 Joindre un fichier de correction (optionnel)
+          </label>
+          <input type="file" (change)="onFichierCorrectionSelected($event)">
+          <p *ngIf="fichierSelectionne" style="font-size: 12px; color: #16a34a;">
+            ✅ {{ fichierSelectionne.name }}
+          </p>
+        </div>
+
+        <div style="display:flex; gap:10px; flex-wrap: wrap;">
+          <button class="btn-primary" [disabled]="savingRevision" (click)="envoyerRevision('A_MODIFIER')">
+            Demander une modification
+          </button>
+          <button class="btn-primary" [disabled]="savingRevision" (click)="envoyerRevision('APPROUVE')">
+            ✅ Approuver
+          </button>
+          <button class="btn-primary" [disabled]="uploadingFichier || !fichierSelectionne" (click)="envoyerFichierCorrection()">
+            📤 Envoyer le fichier
+          </button>
+          <button class="btn-outline" [disabled]="savingRevision" (click)="fermerRevision()">Annuler</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       TAB : CHAT
+       ============================================ -->
+  <section class="tab-content" *ngIf="activeTab === 'chat'">
+    <div class="chat-card">
+      <div class="chat-header">
+        <h3>Chat avec {{ stagiaire.prenom }} {{ stagiaire.nom }}</h3>
+      </div>
+
+      <div class="chat-messages">
+        <div class="chat-message" *ngFor="let m of chatMessages" [class.mine]="m.isMoi">
+          <div class="chat-bubble">
+            <p class="chat-author">{{ m.auteur }}</p>
+            <p class="chat-text">{{ m.contenu }}</p>
+            <span class="chat-time">{{ getTimeAgo(m.date) }}</span>
+          </div>
+        </div>
+        <div class="chat-empty" *ngIf="chatMessages.length === 0">
+          <p>Aucun message.</p>
+        </div>
+      </div>
+
+      <div class="chat-input">
+        <input type="text" placeholder="Écrivez votre message..." [(ngModel)]="newMessage" (keyup.enter)="envoyerMessage()">
+        <button class="btn-primary" (click)="envoyerMessage()">Envoyer</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       TAB : MEET (Google Meet style)
+       ============================================ -->
+  <section class="tab-content meet-tab" *ngIf="activeTab === 'meet'">
+
+    <!-- ===== Écran de préparation ===== -->
+    <div class="meet-prejoin" *ngIf="!meetActive">
+
+      <div class="meet-prejoin-header">
+        <h2>Prêt à rejoindre ?</h2>
+        <p class="meet-prejoin-sub">
+          Vérifiez votre caméra et votre micro avant de rejoindre la visioconférence avec
+          <strong>{{ getNomComplet() }}</strong>
+        </p>
+      </div>
+
+      <div class="meet-prejoin-body">
+
+        <!-- Aperçu caméra -->
+        <div class="meet-preview-box">
+          <video
+            id="meet-preview-video"
+            autoplay
+            playsinline
+            muted
+            [class.hidden]="!meetDeviceSelection.videoEnabled"
+          ></video>
+
+          <div class="meet-preview-off" *ngIf="!meetDeviceSelection.videoEnabled">
+            <div class="meet-preview-off-avatar">{{ getInitiales() }}</div>
+            <p>Caméra désactivée</p>
+          </div>
+
+          <div class="meet-preview-loading" *ngIf="meetPreviewLoading">
+            <div class="meet-spinner"></div>
+            <p>Activation de la caméra…</p>
+          </div>
+
+          <div class="meet-preview-controls">
+            <button
+              class="meet-circle-btn"
+              [class.off]="!meetDeviceSelection.audioEnabled"
+              (click)="togglePreviewAudio()"
+              [title]="meetDeviceSelection.audioEnabled ? 'Couper le micro' : 'Activer le micro'">
+              <span>{{ meetDeviceSelection.audioEnabled ? '🎤' : '🔇' }}</span>
+            </button>
+            <button
+              class="meet-circle-btn"
+              [class.off]="!meetDeviceSelection.videoEnabled"
+              (click)="togglePreviewVideo()"
+              [title]="meetDeviceSelection.videoEnabled ? 'Couper la caméra' : 'Activer la caméra'">
+              <span>{{ meetDeviceSelection.videoEnabled ? '📷' : '📵' }}</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Paramètres -->
+        <div class="meet-settings-box">
+          <h3>Paramètres</h3>
+
+          <div class="meet-setting-group" *ngIf="meetVideoDevices.length > 0">
+            <label>📷 Caméra</label>
+            <select (change)="changerCamera($event)" [value]="meetDeviceSelection.videoDeviceId">
+              <option value="">Caméra par défaut</option>
+              <option *ngFor="let d of meetVideoDevices" [value]="d.deviceId">
+                {{ d.label || ('Caméra ' + d.deviceId.substring(0, 6)) }}
+              </option>
+            </select>
+          </div>
+
+          <div class="meet-setting-group" *ngIf="meetAudioDevices.length > 0">
+            <label>🎤 Microphone</label>
+            <select (change)="changerMicro($event)" [value]="meetDeviceSelection.audioDeviceId">
+              <option value="">Micro par défaut</option>
+              <option *ngFor="let d of meetAudioDevices" [value]="d.deviceId">
+                {{ d.label || ('Micro ' + d.deviceId.substring(0, 6)) }}
+              </option>
+            </select>
+          </div>
+
+          <div class="meet-preview-error" *ngIf="meetPreviewError">
+            ⚠️ {{ meetPreviewError }}
+          </div>
+        </div>
+      </div>
+
+      <div class="meet-prejoin-actions">
+        <button class="meet-btn-cancel" (click)="arretMeet()">Annuler</button>
+        <button class="meet-btn-join" (click)="rejoindreMeet()" [disabled]="meetPreviewLoading">
+          <span>🎥</span> Rejoindre maintenant
+        </button>
+      </div>
+    </div>
+
+    <!-- ===== Conférence active ===== -->
+    <div class="meet-active-wrapper" *ngIf="meetActive">
+        <button class="meet-close-btn"
+          (click)="arretMeet()"
+          title="Fermer la visioconférence">
+    ✕
+  </button>
+      <!-- Top bar -->
+      <div class="meet-topbar">
+        <div class="meet-topbar-left">
+          <span class="meet-recording-dot"></span>
+          <span class="meet-topbar-title">Stage — {{ getNomComplet() }}</span>
+          <span class="meet-timer-pill">{{ getMeetTime() }}</span>
+        </div>
+        <div class="meet-topbar-right">
+          <button class="meet-topbar-btn" (click)="copierLien()" title="Copier le lien">
+            🔗 Copier le lien
+          </button>
+        </div>
+      </div>
+
+      <!-- Corps : vidéo + panneau latéral -->
+      <div class="meet-main">
+
+        <div class="meet-stage">
+          <div id="jitsi-container-enc" class="jitsi-container"></div>
+        </div>
+
+        <aside class="meet-side-panel">
+          <div class="meet-panel-tabs">
+            <button [class.active]="meetPanelTab === 'participants'" (click)="meetPanelTab = 'participants'">
+              👥 <span class="meet-tab-count">{{ meetParticipants.length + 1 }}</span>
+            </button>
+            <button [class.active]="meetPanelTab === 'chat'" (click)="meetPanelTab = 'chat'">💬</button>
+            <button [class.active]="meetPanelTab === 'info'" (click)="meetPanelTab = 'info'">ℹ️</button>
+          </div>
+
+          <!-- Participants -->
+          <div class="meet-panel-content" *ngIf="meetPanelTab === 'participants'">
+            <div class="meet-participant-row me">
+              <div class="meet-participant-avatar">{{ getInitiales() }}</div>
+              <div class="meet-participant-info">
+                <span class="meet-participant-name">{{ adminName }} (vous)</span>
+                <span class="meet-participant-role">Encadrant</span>
+              </div>
+              <span class="meet-mic-status">{{ myMicOn ? '🎤' : '🔇' }}</span>
+            </div>
+            <div class="meet-participant-row" *ngFor="let p of meetParticipants">
+              <div class="meet-participant-avatar alt">{{ p.displayName.charAt(0) }}</div>
+              <div class="meet-participant-info">
+                <span class="meet-participant-name">{{ p.displayName }}</span>
+                <span class="meet-participant-role">Stagiaire</span>
+              </div>
+            </div>
+            <p class="meet-empty" *ngIf="meetParticipants.length === 0">En attente de participants…</p>
+          </div>
+
+          <!-- Chat -->
+          <div class="meet-panel-content" *ngIf="meetPanelTab === 'chat'">
+            <div class="meet-chat-messages">
+              <div class="meet-chat-msg" *ngFor="let m of meetChatMessages">
+                <span class="meet-chat-author">{{ m.author }}</span>
+                <span class="meet-chat-time">{{ m.time }}</span>
+                <p>{{ m.text }}</p>
+              </div>
+              <p class="meet-empty" *ngIf="meetChatMessages.length === 0">Aucun message</p>
+            </div>
+            <div class="meet-chat-input">
+              <input
+                type="text"
+                placeholder="Écrire un message…"
+                [(ngModel)]="meetChatInput"
+                (keyup.enter)="envoyerMeetChat()"
+              />
+              <button (click)="envoyerMeetChat()">➤</button>
+            </div>
+          </div>
+
+          <!-- Info -->
+          <div class="meet-panel-content" *ngIf="meetPanelTab === 'info'">
+            <p><strong>Durée :</strong> {{ getMeetTime() }}</p>
+            <p><strong>Salle :</strong> {{ meetRoomName }}</p>
+            <p><strong>Partage d'écran :</strong> {{ meetIsScreenSharing ? 'Actif' : 'Inactif' }}</p>
+            <p class="meet-muted">Utilisez les contrôles en bas pour gérer votre caméra et votre micro.</p>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       MODAL : Aperçu du livrable
+       ============================================ -->
+  <div class="stag-modal-overlay" *ngIf="apercuLivrable" (click)="fermerApercu()">
+    <div class="apercu-modal" (click)="$event.stopPropagation()">
+      <div class="apercu-header">
+        <h3>👁️ {{ apercuLivrable.titre }} — V{{ apercuLivrable.version }}</h3>
+        <button class="apercu-close" (click)="fermerApercu()">✕</button>
+      </div>
+      <div class="apercu-body">
+        <p class="apercu-desc">{{ apercuLivrable.description }}</p>
+        <p class="apercu-meta">
+          Déposé le {{ apercuLivrable.dateSoumission | date:'dd/MM/yyyy HH:mm' }}
+        </p>
+
+        <div class="apercu-file" *ngIf="apercuLivrable.fichierUrl">
+          <a [href]="apercuLivrable.fichierUrl" target="_blank" class="apercu-btn">
+            📥 Ouvrir le fichier
+          </a>
+        </div>
+
+        <div class="apercu-file empty" *ngIf="!apercuLivrable.fichierUrl">
+          <p>Aucun fichier joint à ce livrable.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

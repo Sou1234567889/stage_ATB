@@ -1,0 +1,706 @@
+/* ============================================ */
+/* CONTENEUR PRINCIPAL                          */
+/* ============================================ */
+.apple-notifications {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 32px 20px 60px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+  color: #1d1d1f;
+  background: #ffffff;
+}
+
+/* ============================================ */
+/* HEADER                                       */
+/* ============================================ */
+.apple-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e5e5e7;
+}
+
+.apple-header h1 {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin: 0 0 4px;
+  color: #1d1d1f;
+}
+
+.header-sub {
+  font-size: 14px;
+  color: #6e6e73;
+  margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ============================================ */
+/* BOUTONS TEXTE                                */
+/* ============================================ */
+.btn-text {
+  background: none;
+  border: none;
+  color: #0071e3;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: background 0.15s ease;
+}
+
+.btn-text:hover {
+  background: #f5f5f7;
+}
+
+.btn-text.danger {
+  color: #d70015;
+}
+
+.btn-text.danger:hover {
+  background: #fff2f2;
+}
+
+.btn-danger {
+  background: #d70015;
+  color: white;
+  border: none;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 8px 14px;
+  border-radius: 8px;
+  transition: background 0.15s ease;
+}
+
+.btn-danger:hover {
+  background: #b8000f;
+}
+
+/* ============================================ */
+/* CHIPS CATÉGORIES                             */
+/* ============================================ */
+.admin-categories {
+  margin-bottom: 20px;
+}
+
+.category-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.category-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 100px;
+  background: #f5f5f7;
+  border: 1px solid transparent;
+  font-size: 13px;
+  font-weight: 500;
+  color: #1d1d1f;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.category-chip:hover {
+  background: #ebebed;
+}
+
+.category-chip.active {
+  background: #1d1d1f;
+  color: white;
+}
+
+.chip-count {
+  background: rgba(255, 255, 255, 0.2);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 1px 7px;
+  border-radius: 100px;
+  min-width: 20px;
+  text-align: center;
+}
+
+.category-chip:not(.active) .chip-count {
+  background: #e5e5e7;
+  color: #1d1d1f;
+}
+
+/* ============================================ */
+/* FILTRES                                      */
+/* ============================================ */
+.apple-filters {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.segment-control {
+  display: inline-flex;
+  background: #f5f5f7;
+  padding: 3px;
+  border-radius: 10px;
+}
+
+.segment-control button {
+  background: none;
+  border: none;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #6e6e73;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.15s ease;
+}
+
+.segment-control button:hover {
+  color: #1d1d1f;
+}
+
+.segment-control button.active {
+  background: #ffffff;
+  color: #1d1d1f;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* ============================================ */
+/* RECHERCHE                                    */
+/* ============================================ */
+.apple-search {
+  flex: 1;
+  max-width: 300px;
+  min-width: 200px;
+}
+
+.apple-search input {
+  width: 100%;
+  padding: 9px 14px;
+  border-radius: 10px;
+  border: 1px solid #e5e5e7;
+  background: #f5f5f7;
+  font-size: 14px;
+  color: #1d1d1f;
+  outline: none;
+  transition: all 0.15s ease;
+}
+
+.apple-search input:focus {
+  background: #ffffff;
+  border-color: #0071e3;
+  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.1);
+}
+
+.apple-search input::placeholder {
+  color: #86868b;
+}
+
+/* ============================================ */
+/* LISTE                                        */
+/* ============================================ */
+.apple-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* ============================================ */
+/* BARRE DE SÉLECTION                           */
+/* ============================================ */
+.select-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  background: #f5f5f7;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  transition: background 0.15s ease;
+}
+
+.select-bar.has-selection {
+  background: #e8f2ff;
+}
+
+.select-label {
+  font-size: 13px;
+  color: #6e6e73;
+  flex: 1;
+}
+
+.select-bar.has-selection .select-label {
+  color: #0071e3;
+  font-weight: 500;
+}
+
+/* Checkbox personnalisée */
+.item-check {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.item-check input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.check-box {
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  border: 1.5px solid #c7c7cc;
+  background: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.item-check input:checked + .check-box {
+  background: #0071e3;
+  border-color: #0071e3;
+}
+
+.item-check input:checked + .check-box::after {
+  content: '';
+  width: 4px;
+  height: 8px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+  margin-top: -2px;
+}
+
+.item-check input:indeterminate + .check-box {
+  background: #0071e3;
+  border-color: #0071e3;
+}
+
+.item-check input:indeterminate + .check-box::after {
+  content: '';
+  width: 8px;
+  height: 2px;
+  background: white;
+}
+
+/* ============================================ */
+/* ITEM NOTIFICATION                            */
+/* ============================================ */
+.apple-item {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid #f0f0f2;
+  transition: all 0.15s ease;
+}
+
+.apple-item:hover {
+  background: #fafafa;
+  border-color: #e5e5e7;
+}
+
+.apple-item.unread {
+  background: #f9fbff;
+  border-color: #e0edff;
+}
+
+.apple-item.selected {
+  background: #e8f2ff;
+  border-color: #0071e3;
+}
+
+.apple-item + .apple-item {
+  margin-top: 6px;
+}
+
+/* ============================================ */
+/* POINT COLORÉ                                 */
+/* ============================================ */
+.item-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #c7c7cc;
+  flex-shrink: 0;
+  margin-top: 6px;
+}
+
+.item-dot.type-appel           { background: #0071e3; }
+.item-dot.type-message         { background: #34c759; }
+.item-dot.type-candidature     { background: #ff9500; }
+.item-dot.type-document        { background: #5856d6; }
+.item-dot.type-convention      { background: #af52de; }
+.item-dot.type-evaluation      { background: #ffcc00; }
+.item-dot.type-disponibilite   { background: #30d158; }
+.item-dot.type-affectation     { background: #5ac8fa; }
+.item-dot.type-inscription     { background: #0071e3; }
+.item-dot.type-success         { background: #34c759; }
+.item-dot.type-error           { background: #ff3b30; }
+.item-dot.type-warning         { background: #ff9500; }
+.item-dot.type-info            { background: #0071e3; }
+.item-dot.type-default         { background: #c7c7cc; }
+
+/* ============================================ */
+/* CONTENU                                      */
+/* ============================================ */
+.item-content {
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.item-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1d1d1f;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.item-time {
+  font-size: 12px;
+  color: #86868b;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.item-message {
+  font-size: 13px;
+  color: #6e6e73;
+  margin: 0 0 8px;
+  line-height: 1.45;
+  word-break: break-word;
+}
+
+.item-user-info {
+  margin-bottom: 8px;
+}
+
+.user-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 500;
+  color: #1d1d1f;
+  background: #f5f5f7;
+  padding: 3px 9px;
+  border-radius: 6px;
+}
+
+.user-badge em {
+  font-style: normal;
+  color: #0071e3;
+  margin-left: 4px;
+}
+
+.item-tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 6px;
+  background: #f5f5f7;
+  color: #6e6e73;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.item-tag.type-appel           { background: #e8f2ff; color: #0071e3; }
+.item-tag.type-message         { background: #e6f9ec; color: #248a3d; }
+.item-tag.type-candidature     { background: #fff4e6; color: #b25c00; }
+.item-tag.type-document        { background: #eeedfb; color: #4b49a9; }
+.item-tag.type-convention      { background: #f7ecfa; color: #8941a8; }
+.item-tag.type-evaluation      { background: #fff9db; color: #997a00; }
+.item-tag.type-disponibilite   { background: #e6f9ec; color: #248a3d; }
+.item-tag.type-inscription     { background: #e8f2ff; color: #0071e3; }
+.item-tag.type-success         { background: #e6f9ec; color: #248a3d; }
+.item-tag.type-error           { background: #ffe5e5; color: #b8000f; }
+.item-tag.type-warning         { background: #fff4e6; color: #b25c00; }
+.item-tag.type-info            { background: #e8f2ff; color: #0071e3; }
+
+/* ============================================ */
+/* ACTIONS                                      */
+/* ============================================ */
+.item-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  flex-shrink: 0;
+  min-width: 90px;
+  align-items: flex-end;
+}
+
+.apple-item:hover .item-actions {
+  opacity: 1;
+}
+
+.action-text {
+  background: none;
+  border: none;
+  font-size: 12px;
+  font-weight: 500;
+  color: #0071e3;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  transition: background 0.15s ease;
+}
+
+.action-text:hover {
+  background: #f5f5f7;
+}
+
+.action-text.danger {
+  color: #d70015;
+}
+
+.action-text.danger:hover {
+  background: #fff2f2;
+}
+
+/* Barre non-lu */
+.unread-bar {
+  position: absolute;
+  left: 0;
+  top: 12px;
+  bottom: 12px;
+  width: 3px;
+  background: #0071e3;
+  border-radius: 0 3px 3px 0;
+}
+
+/* ============================================ */
+/* ÉTATS VIDES / ERREURS                        */
+/* ============================================ */
+.apple-empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: #6e6e73;
+}
+
+.apple-empty h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1d1d1f;
+  margin: 0 0 8px;
+}
+
+.apple-empty p {
+  font-size: 14px;
+  margin: 0;
+}
+
+.apple-error {
+  background: #fff2f2;
+  border: 1px solid #ffd0d0;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.apple-error p {
+  color: #b8000f;
+  font-size: 14px;
+  margin: 0 0 12px;
+}
+
+.apple-error button {
+  background: #d70015;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* ============================================ */
+/* SKELETON LOADING                             */
+/* ============================================ */
+.apple-skeleton {
+  display: flex;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 12px;
+  background: #fafafa;
+  margin-bottom: 6px;
+}
+
+.skeleton-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #e5e5e7;
+  flex-shrink: 0;
+  margin-top: 6px;
+}
+
+.skeleton-text {
+  flex: 1;
+}
+
+.skeleton-line {
+  height: 12px;
+  background: #e5e5e7;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.skeleton-line.w60 { width: 60%; }
+.skeleton-line.w40 { width: 40%; }
+
+/* ============================================ */
+/* PAGINATION                                   */
+/* ============================================ */
+.apple-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #e5e5e7;
+  flex-wrap: wrap;
+}
+
+.pagination-info {
+  font-size: 13px;
+  color: #6e6e73;
+}
+
+.pagination-info strong {
+  color: #1d1d1f;
+  font-weight: 600;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.page-size-select {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #e5e5e7;
+  background: #ffffff;
+  font-size: 13px;
+  color: #1d1d1f;
+  cursor: pointer;
+  outline: none;
+  margin-right: 8px;
+}
+
+.page-size-select:focus {
+  border-color: #0071e3;
+}
+
+.page-arrow,
+.page-num {
+  min-width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: #f5f5f7;
+  font-size: 13px;
+  font-weight: 500;
+  color: #1d1d1f;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  padding: 0 8px;
+}
+
+.page-arrow:hover:not(:disabled),
+.page-num:hover {
+  background: #ebebed;
+}
+
+.page-arrow:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.page-num.active {
+  background: #1d1d1f;
+  color: white;
+}
+
+.page-num.active:hover {
+  background: #1d1d1f;
+}
+
+/* ============================================ */
+/* RESPONSIVE                                   */
+/* ============================================ */
+@media (max-width: 640px) {
+  .apple-notifications {
+    padding: 20px 14px 40px;
+  }
+
+  .apple-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .apple-header h1 {
+    font-size: 26px;
+  }
+
+  .header-actions {
+    justify-content: flex-start;
+  }
+
+  .apple-filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .apple-search {
+    max-width: none;
+  }
+
+  .item-actions {
+    opacity: 1;
+    min-width: auto;
+  }
+
+  .apple-pagination {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

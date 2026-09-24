@@ -1,0 +1,58 @@
+<!-- ============ NAVBAR ============ -->
+<nav class="page-navbar">
+  <a routerLink="/" class="nav-brand">
+    <img src="assets/images/attijari-logo.png" alt="Attijari Bank" class="nav-logo">
+  </a>
+
+  <ul class="nav-menu">
+    <li><a routerLink="/" class="nav-link">Accueil</a></li>
+    <li><a routerLink="/a-propos" class="nav-link">À propos</a></li>
+    <li><a routerLink="/services" class="nav-link active">Services</a></li>
+    <li><a routerLink="/ressources" class="nav-link">Ressources</a></li>
+    <li><a routerLink="/contact" class="nav-link">Contact</a></li>
+  </ul>
+
+  <a routerLink="/login" class="btn-login">
+    <span class="btn-login-icon">👤</span> Se connecter
+  </a>
+</nav>
+
+<!-- ============ NOT FOUND ============ -->
+<div class="detail-not-found" *ngIf="notFound">
+  <h2>Service introuvable</h2>
+  <p>Ce service n'existe pas ou a été supprimé.</p>
+  <button class="btn-retour" (click)="retourListe()">
+    ← Retour aux services
+  </button>
+</div>
+
+<!-- ============ DETAIL ============ -->
+<article class="detail-wrapper" *ngIf="!notFound && service">
+
+  <header class="detail-hero">
+    <div class="detail-hero-content">
+      <button class="btn-retour-top" (click)="retourListe()">
+        ← Retour aux services
+      </button>
+
+      <span class="detail-tag">{{ service.categorie }}</span>
+      <h1>{{ service.titre }}</h1>
+
+      <p class="detail-intro">{{ service.description }}</p>
+    </div>
+  </header>
+
+  <div class="detail-container">
+    <div class="detail-content" [innerHTML]="contenuHtml"></div>
+
+    <div class="detail-actions">
+      <button class="btn-retour-bottom" (click)="retourListe()">
+        ← Retour aux services
+      </button>
+
+      <a routerLink="/signup" class="btn-cta">
+        Rejoindre Attijari Workspace →
+      </a>
+    </div>
+  </div>
+</article>

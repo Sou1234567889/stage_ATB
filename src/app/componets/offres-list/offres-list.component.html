@@ -1,0 +1,244 @@
+<!-- ========================================================
+     MODE PUBLIC — page d'accueil (SANS sidebar ni topbar)
+     ======================================================== -->
+
+     
+<ng-container *ngIf="mode === 'public'">
+  
+  <section class="offres-publiques">
+
+    <div class="offres-publiques-header">
+      <h2> Offres disponibles</h2>
+      <p class="offres-publiques-sub">Parcourez les offres et postulez en un clic.</p>
+    </div>
+
+    <!-- Filtres -->
+    <div class="filtres-bar">
+      <button class="filtre-btn" [class.active]="filtreType === 'TOUS'" (click)="filtreType = 'TOUS'">Tout voir</button>
+      <button class="filtre-btn" [class.active]="filtreType === 'STAGE'" (click)="filtreType = 'STAGE'">🎓 Stages</button>
+      <button class="filtre-btn" [class.active]="filtreType === 'EMPLOI'" (click)="filtreType = 'EMPLOI'">💼 Emplois</button>
+    </div>
+
+    <div class="error-banner" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+    <!-- Grille d'offres -->
+    <div class="offres-grid" *ngIf="!loading; else loadingPublic">
+      <div class="offre-card" *ngFor="let o of offresFiltrees" (click)="onCardClick(o)">
+        <div class="offre-card-top">
+          <span class="type-badge" [class.emploi]="o.type === 'EMPLOI'">
+            {{ o.type === 'EMPLOI' ? '💼 Emploi' : '🎓 Stage' }}
+          </span>
+          <span class="lieu-tag" *ngIf="o.lieu">📍 {{ o.lieu }}</span>
+        </div>
+
+        <h3>{{ o.titre }}</h3>
+        <p class="offre-dept">{{ o.departement }}</p>
+        <p class="offre-desc">{{ o.description | slice:0:140 }}...</p>
+
+        <div class="offre-meta">
+          <span *ngIf="o.type === 'STAGE' && o.dureeEnMois">⏱ {{ o.dureeEnMois }} mois</span>
+          <span *ngIf="o.dateLimite && o.dateLimite !== '—'">📅 Limite : {{ o.dateLimite | date:'dd/MM/yyyy' }}</span>
+        </div>
+
+        <button class="btn-primary full-width">
+          Postuler →
+        </button>
+      </div>
+
+      <p class="empty-state" *ngIf="offresFiltrees.length === 0">
+        Aucune offre disponible pour le moment dans cette catégorie.
+      </p>
+    </div>
+
+    <ng-template #loadingPublic>
+      <div class="offres-grid">
+        <div class="offre-card skeleton" *ngFor="let i of [1,2,3]"></div>
+      </div>
+    </ng-template>
+
+  </section>
+</ng-container>
+
+<!-- ========================================================
+     MODE ADMIN — dashboard (AVEC sidebar + topbar)
+     ======================================================== -->
+<ng-container *ngIf="mode === 'admin'">
+
+  <app-back-to-dashboard 
+    [label]="'Retour au tableau de bord'"
+    [fallbackUrl]="'/dashboard/super-admin'">
+  </app-back-to-dashboard>
+
+  <div class="dash-layout">
+
+    <!-- ===================== SIDEBAR ===================== -->
+    <aside class="sidebar">
+      <a [routerLink]="isStagiaire ? '/dashboard/stagiaire' : '/dashboard/candidat'" class="brand">
+        <img
+          src="assets/images/attijari-logo-removebg-preview.png"
+          alt="Attijari Bank - Workspace"
+          class="brand-logo"
+        >
+      </a>
+
+      <div class="sidebar-user-card">
+        <div class="sidebar-avatar">{{ getInitials() }}</div>
+        <div>
+          <p class="sidebar-user-name">{{ currentUser?.prenom }} {{ currentUser?.nom }}</p>
+          <span class="sidebar-role-badge">{{ isStagiaire ? 'Stagiaire' : 'Employé' }}</span>
+        </div>
+      </div>
+
+      <button class="nav-primary" [routerLink]="isStagiaire ? '/dashboard/stagiaire' : '/dashboard/candidat'">
+        Tableau de bord
+      </button>
+
+      <nav class="nav-group">
+        <p class="nav-group-title">Mon espace</p>
+        <a class="nav-item" [routerLink]="isStagiaire ? '/dashboard/stagiaire' : '/dashboard/candidat'">
+          Mes candidatures
+        </a>
+        <a class="nav-item active" routerLink="/offres">
+          Offres disponibles
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="secure-card">
+          <div>
+            <p class="secure-title">Sécurisé &amp; Fiable</p>
+            <p class="secure-text">Vos données sont protégées selon les standards les plus élevés.</p>
+          </div>
+        </div>
+        <button class="logout-btn" (click)="onLogout()">
+          Se déconnecter
+        </button>
+      </div>
+    </aside>
+
+    <!-- ===================== MAIN ===================== -->
+    <main class="main">
+
+      <header class="topbar">
+        <div>
+          <button class="back-btn" (click)="goBack()" style="margin-bottom:8px;">← Retour</button>
+          <h1>Offres disponibles</h1>
+          <p class="subtitle">Parcourez les offres et postulez en un clic.</p>
+        </div>
+
+        <div class="topbar-right">
+          <button class="icon-btn"></button>
+          <div class="admin-chip">
+            <div class="avatar-circle">{{ getInitials() }}</div>
+            <div>
+              <p class="admin-name">{{ currentUser?.prenom }} {{ currentUser?.nom }}</p>
+              <p class="admin-role">{{ isStagiaire ? 'Stagiaire' : 'Employé' }}</p>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div class="offres-page">
+        <div class="filtres-bar">
+          <button class="filtre-btn" [class.active]="filtreType === 'STAGE'" (click)="filtreType = 'STAGE'">🎓 Stages</button>
+          <button class="filtre-btn" [class.active]="filtreType === 'EMPLOI'" (click)="filtreType = 'EMPLOI'">💼 Emplois</button>
+          <button class="filtre-btn" [class.active]="filtreType === 'TOUS'" (click)="filtreType = 'TOUS'">Tout voir</button>
+        </div>
+
+        <div class="error-banner" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+        <div class="offres-grid" *ngIf="!loading; else loadingState">
+          <div class="offre-card" *ngFor="let o of offresFiltrees">
+            <div class="offre-card-top">
+              <span class="type-badge" [class.emploi]="o.type === 'EMPLOI'">
+                {{ o.type === 'EMPLOI' ? '💼 Emploi' : '🎓 Stage' }}
+              </span>
+              <span class="lieu-tag" *ngIf="o.lieu">📍 {{ o.lieu }}</span>
+            </div>
+
+            <h3>{{ o.titre }}</h3>
+            <p class="offre-dept">{{ o.departement }}</p>
+            <p class="offre-desc">{{ o.description }}</p>
+
+            <div class="offre-meta">
+              <span *ngIf="o.type === 'STAGE'">⏱ {{ o.dureeEnMois }} mois</span>
+              <span *ngIf="o.dateLimite && o.dateLimite !== '—'">📅 Limite : {{ o.dateLimite | date:'dd/MM/yyyy' }}</span>
+            </div>
+
+            <button
+              class="btn-primary full-width"
+              [disabled]="dejaPostule(o.id)"
+              (click)="ouvrirPostulerModal(o)">
+              {{ dejaPostule(o.id) ? '✓ Déjà postulé' : 'Postuler' }}
+            </button>
+          </div>
+
+          <p class="empty-state" *ngIf="offresFiltrees.length === 0">
+            Aucune offre disponible pour le moment dans cette catégorie.
+          </p>
+        </div>
+
+        <ng-template #loadingState>
+          <div class="offres-grid">
+            <div class="offre-card skeleton" *ngFor="let i of [1,2,3]"></div>
+          </div>
+        </ng-template>
+      </div>
+    </main>
+
+    <!-- Modal de candidature (admin) -->
+    <div class="modal-overlay" *ngIf="showPostulerModal" (click)="fermerPostulerModal()">
+      <div class="modal-box" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3>Postuler : {{ offreSelectionnee?.titre }}</h3>
+          <button class="modal-close-btn" (click)="fermerPostulerModal()">Fermer</button>
+        </div>
+
+        <div class="modal-error" *ngIf="postulerError">{{ postulerError }}</div>
+        <div class="modal-success" *ngIf="postulerSuccess">{{ postulerSuccess }}</div>
+
+        <div class="form-grid" *ngIf="!postulerSuccess">
+          <div class="form-field full">
+            <label>CV *</label>
+            <input type="file" accept=".pdf,.doc,.docx" (change)="onFileSelected($event, 'cv')">
+          </div>
+
+          <ng-container *ngIf="offreSelectionnee?.type === 'EMPLOI'">
+            <div class="form-field full">
+              <label>Diplôme *</label>
+              <input type="file" accept=".pdf,.jpg,.jpeg,.png" (change)="onFileSelected($event, 'diplome')">
+            </div>
+          </ng-container>
+
+          <ng-container *ngIf="offreSelectionnee?.type === 'STAGE'">
+            <div class="form-field full">
+              <label>Carte étudiante *</label>
+              <input type="file" accept=".pdf,.jpg,.jpeg,.png" (change)="onFileSelected($event, 'carteEtudiante')">
+            </div>
+            <div class="form-field full">
+              <label>CIN (photo) *</label>
+              <input type="file" accept=".jpg,.jpeg,.png,.pdf" (change)="onFileSelected($event, 'cin')">
+            </div>
+            <div class="form-field full">
+              <label>Demande de stage *</label>
+              <input type="file" accept=".pdf,.doc,.docx" (change)="onFileSelected($event, 'demandeStage')">
+            </div>
+          </ng-container>
+
+          <div class="form-field full">
+            <label>Lettre de motivation (facultatif)</label>
+            <textarea rows="4" [(ngModel)]="lettreMotivation" placeholder="Expliquez pourquoi cette offre vous intéresse..."></textarea>
+          </div>
+        </div>
+
+        <div class="modal-actions" *ngIf="!postulerSuccess">
+          <button class="btn-outline" (click)="fermerPostulerModal()">Annuler</button>
+          <button class="btn-primary" (click)="confirmerPostuler()" [disabled]="postulerEnCours">
+            {{ postulerEnCours ? 'Envoi...' : 'Envoyer ma candidature' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</ng-container>

@@ -1,0 +1,408 @@
+/* =====================================================
+   MODAL APPEL ENTRANT — Design moderne (Google Meet style)
+   ===================================================== */
+
+/* ---------- Overlay ---------- */
+.call-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  animation: overlayFade 0.3s ease;
+}
+
+@keyframes overlayFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ---------- Backdrop avec dégradé animé ---------- */
+.call-backdrop {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+  background-size: 200% 200%;
+  animation: gradientShift 8s ease infinite;
+}
+
+.call-backdrop::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 50%,
+    rgba(246, 168, 33, 0.15) 0%,
+    transparent 60%);
+  pointer-events: none;
+}
+
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* ---------- Anneaux pulsants en arrière-plan ---------- */
+.pulse-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 2px solid rgba(246, 168, 33, 0.4);
+  animation: pulseExpand 3s ease-out infinite;
+}
+
+.ring-1 {
+  width: 200px;
+  height: 200px;
+  animation-delay: 0s;
+}
+
+.ring-2 {
+  width: 200px;
+  height: 200px;
+  animation-delay: 1s;
+}
+
+.ring-3 {
+  width: 200px;
+  height: 200px;
+  animation-delay: 2s;
+}
+
+@keyframes pulseExpand {
+  0% {
+    width: 200px;
+    height: 200px;
+    opacity: 0.8;
+  }
+  100% {
+    width: 800px;
+    height: 800px;
+    opacity: 0;
+  }
+}
+
+/* ---------- Carte principale ---------- */
+.call-card {
+  position: relative;
+  z-index: 2;
+  background: rgba(30, 41, 59, 0.75);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 28px;
+  padding: 44px 40px 32px;
+  text-align: center;
+  color: #fff;
+  min-width: 380px;
+  max-width: 440px;
+  box-shadow:
+    0 32px 80px rgba(0, 0, 0, 0.7),
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+  animation: cardPop 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+
+@keyframes cardPop {
+  from {
+    transform: scale(0.85) translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+/* ---------- Avatar avec pulsation ---------- */
+.avatar-wrapper {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 24px;
+}
+
+.avatar {
+  position: relative;
+  z-index: 2;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f6a821 0%, #e2251b 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 42px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  box-shadow:
+    0 8px 32px rgba(246, 168, 33, 0.5),
+    0 0 0 4px rgba(246, 168, 33, 0.15);
+}
+
+.avatar-pulse {
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 3px solid rgba(246, 168, 33, 0.6);
+  animation: avatarPulse 1.8s ease-out infinite;
+}
+
+.avatar-pulse.delay-1 {
+  animation-delay: 0.9s;
+}
+
+@keyframes avatarPulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+
+/* ---------- Label "Appel vidéo entrant" ---------- */
+.call-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #94a3b8;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-weight: 600;
+  margin: 0 0 12px;
+  padding: 6px 14px;
+  background: rgba(148, 163, 184, 0.1);
+  border-radius: 20px;
+}
+
+.dot-live {
+  width: 8px;
+  height: 8px;
+  background: #22c55e;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #22c55e;
+  animation: dotBlink 1.2s ease-in-out infinite;
+}
+
+@keyframes dotBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* ---------- Nom de l'appelant ---------- */
+.call-name {
+  font-size: 26px;
+  font-weight: 700;
+  margin: 0 0 6px;
+  color: #fff;
+  letter-spacing: -0.3px;
+}
+
+.call-role {
+  color: #94a3b8;
+  font-size: 14px;
+  margin: 0 0 28px;
+}
+
+/* ---------- Indicateur sonnerie ---------- */
+.ringing-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px;
+  background: rgba(246, 168, 33, 0.1);
+  border: 1px solid rgba(246, 168, 33, 0.25);
+  border-radius: 14px;
+  margin-bottom: 32px;
+  font-size: 13px;
+  color: #f6a821;
+}
+
+.ringing-icon {
+  display: inline-block;
+  font-size: 16px;
+  animation: ringShake 1.5s ease-in-out infinite;
+}
+
+@keyframes ringShake {
+  0%, 100% { transform: rotate(0deg); }
+  10% { transform: rotate(-15deg); }
+  20% { transform: rotate(15deg); }
+  30% { transform: rotate(-10deg); }
+  40% { transform: rotate(10deg); }
+  50% { transform: rotate(0deg); }
+}
+
+.ringing-text {
+  font-weight: 500;
+}
+
+.ringing-dots {
+  display: inline-flex;
+  gap: 3px;
+  margin-left: 4px;
+}
+
+.ringing-dots span {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #f6a821;
+  animation: dotBounce 1.4s ease-in-out infinite;
+}
+
+.ringing-dots span:nth-child(2) { animation-delay: 0.2s; }
+.ringing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes dotBounce {
+  0%, 80%, 100% { transform: scale(1); opacity: 0.5; }
+  40% { transform: scale(1.5); opacity: 1; }
+}
+
+/* ---------- Boutons d'action ---------- */
+.call-actions {
+  display: flex;
+  gap: 32px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+
+.action-btn:hover {
+  transform: translateY(-4px);
+}
+
+.action-btn:active {
+  transform: translateY(-2px) scale(0.98);
+}
+
+.action-btn .btn-icon {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.action-btn .btn-icon::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+/* ----- Refuser (rouge) ----- */
+.action-btn.refuse .btn-icon {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  box-shadow: 0 8px 24px rgba(239, 68, 68, 0.5);
+}
+
+.action-btn.refuse:hover .btn-icon {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  box-shadow: 0 12px 32px rgba(239, 68, 68, 0.7);
+}
+
+.action-btn.refuse .btn-label {
+  color: #ef4444;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ----- Accepter (vert, avec animation pulse) ----- */
+.action-btn.accept .btn-icon {
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  box-shadow: 0 8px 24px rgba(34, 197, 94, 0.5);
+  animation: acceptPulse 2s ease-in-out infinite;
+}
+
+.action-btn.accept:hover .btn-icon {
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  box-shadow: 0 12px 32px rgba(34, 197, 94, 0.7);
+  animation: none;
+}
+
+.action-btn.accept .btn-label {
+  color: #22c55e;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+@keyframes acceptPulse {
+  0%, 100% {
+    box-shadow: 0 8px 24px rgba(34, 197, 94, 0.5),
+                0 0 0 0 rgba(34, 197, 94, 0.7);
+  }
+  50% {
+    box-shadow: 0 8px 24px rgba(34, 197, 94, 0.5),
+                0 0 0 16px rgba(34, 197, 94, 0);
+  }
+}
+
+/* ---------- Hint timeout ---------- */
+.timeout-hint {
+  color: #64748b;
+  font-size: 11px;
+  margin: 16px 0 0;
+  letter-spacing: 0.3px;
+  opacity: 0.7;
+}
+
+/* ---------- Responsive (mobile) ---------- */
+@media (max-width: 480px) {
+  .call-card {
+    min-width: 90vw;
+    padding: 32px 24px 24px;
+    border-radius: 24px;
+  }
+
+  .avatar-wrapper,
+  .avatar {
+    width: 96px;
+    height: 96px;
+  }
+
+  .avatar {
+    font-size: 34px;
+  }
+
+  .call-name {
+    font-size: 22px;
+  }
+
+  .action-btn .btn-icon {
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+  }
+
+  .call-actions {
+    gap: 24px;
+  }
+}

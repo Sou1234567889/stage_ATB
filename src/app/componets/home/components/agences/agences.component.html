@@ -1,0 +1,34 @@
+<section class="agences-section">
+  <div class="section-header">
+    <span class="section-label">Réseau national</span>
+    <div class="section-line-center"></div>
+    <h2>Nos agences</h2>
+    <p class="section-desc">Près de vous, partout en Tunisie</p>
+  </div>
+
+  <div class="agences-grid" *ngIf="!loading; else skeleton">
+    <article class="agence-card" *ngFor="let a of agences">
+      
+      <h3>{{ a.nom }}</h3>
+      <p class="agence-ville">{{ a.ville }}</p>
+      <p class="agence-adresse">{{ a.adresse }}</p>
+
+      <div class="agence-meta">
+        <p *ngIf="a.telephone" class="agence-meta-item">
+          <span class="meta-label">Tél.</span>
+          <span class="meta-value">{{ a.telephone }}</span>
+        </p>
+        <p *ngIf="a.horaires" class="agence-meta-item">
+          <span class="meta-label">Horaires</span>
+          <span class="meta-value">{{ a.horaires }}</span>
+        </p>
+      </div>
+    </article>
+  </div>
+
+  <ng-template #skeleton>
+    <div class="agences-grid">
+      <div class="skeleton-card" *ngFor="let i of [1,2,3,4,5,6]"></div>
+    </div>
+  </ng-template>
+</section>

@@ -1,0 +1,651 @@
+<div class="stag-layout">
+
+  <!-- ===================== SIDEBAR ===================== -->
+  <aside class="stag-sidebar">
+    <a routerLink="/" class="brand">
+      <img src="assets/images/attijari-bank-logo.png" alt="Attijari Bank" class="brand-logo" />
+    </a>
+
+    <div class="stag-user-card">
+      <div class="stag-avatar">{{ initials(stagiereName) }}</div>
+      <div class="stag-user-info">
+        <p class="stag-user-name">{{ stagiereName }}</p>
+        <span class="stag-role-chip">Stagiaire</span>
+      </div>
+    </div>
+
+    <nav class="stag-nav">
+      <button class="stag-nav-item" [class.active]="activeSection === 'accueil'" (click)="setSection('accueil')">
+        <span>Tableau de bord</span>
+      </button>
+      <button class="stag-nav-item" [class.active]="activeSection === 'offres'" (click)="setSection('offres')">
+        <span>Offres de stage</span>
+      </button>
+      <button class="stag-nav-item" [class.active]="activeSection === 'livrables'" (click)="setSection('livrables')">
+        <span>Mes livrables</span>
+        <span class="stag-nav-badge" *ngIf="livrablesAReviser > 0">{{ livrablesAReviser }}</span>
+      </button>
+      <button class="stag-nav-item" [class.active]="activeSection === 'profil'" (click)="setSection('profil')">
+        <span>Mon profil</span>
+      </button>
+      <button class="stag-nav-item" [class.active]="activeSection === 'aide'" (click)="setSection('aide')">
+        <span>Aide & Ressources</span>
+      </button>
+    </nav>
+
+    <div class="stag-sidebar-footer">
+      <button class="stag-book-btn" (click)="telechargerBookPfe()">
+        📄 Télécharger le Book PFE
+      </button>
+
+      <div class="stag-progress-card">
+        <div class="stag-progress-header">
+          <span class="stag-progress-title">Progression du stage</span>
+          <span class="stag-progress-pct">{{ progressionPct }}%</span>
+        </div>
+        <div class="stag-progress-bar">
+          <div class="stag-progress-fill" [style.width.%]="progressionPct"></div>
+        </div>
+      </div>
+
+      <button class="stag-logout-btn" (click)="logout()">Se déconnecter</button>
+    </div>
+  </aside>
+
+  <!-- ===================== MAIN ===================== -->
+  <main class="stag-main">
+    <header class="stag-topbar">
+      <div>
+        <h1>
+          <ng-container [ngSwitch]="activeSection">
+            <span *ngSwitchCase="'accueil'">Bonjour, {{ stagiereName }}</span>
+            <span *ngSwitchCase="'offres'">Offres de stage</span>
+            <span *ngSwitchCase="'livrables'">Mes livrables</span>
+            <span *ngSwitchCase="'profil'">Mon profil</span>
+            <span *ngSwitchCase="'aide'">Aide & Ressources</span>
+          </ng-container>
+        </h1>
+      </div>
+
+      <div class="stag-topbar-right">
+        <button class="stag-icon-btn" (click)="toggleChatPanel()" [class.active]="showChatPanel" title="Chat">💬</button>
+        <button class="stag-icon-btn" (click)="toggleMeetPanel()" [class.active]="showMeetPanel" title="Visioconférence">📹</button>
+         <!-- 🆕 BOUTON APPEL DIRECT À L'ENCADRANT -->
+  <button 
+    class="stag-icon-btn stag-call-btn" 
+    (click)="appelerEncadrant()"
+    [disabled]="!encadrant?.id || meetActive || appelEnCours"
+    [title]="encadrant 
+      ? '📞 Appeler ' + (encadrant.prenom || '') + ' ' + (encadrant.nom || '')
+      : 'Aucun encadrant affecté'">
+    📞
+  </button>
+
+        <!-- Notifications -->
+        <div class="notification-wrapper">
+          <button class="icon-btn" (click)="toggleNotifPanel()" [class.active]="showNotifPanel" title="Notifications">
+            <span class="bell-icon">🔔</span>
+            <span class="notif-badge" *ngIf="notificationCount > 0">{{ notificationCount }}</span>
+          </button>
+
+          <div class="notif-dropdown" *ngIf="showNotifPanel">
+            <div class="notif-header">
+              <h3>Notifications</h3>
+              <button class="mark-all-btn" *ngIf="notificationCount > 0" (click)="markAllAsRead()">
+                Tout marquer lu
+              </button>
+            </div>
+
+            <div class="notif-list">
+              <div class="notif-item" *ngFor="let notif of notifications"
+                   (click)="onNotifClick(notif)" [class.read]="notif.lu">
+                <div class="notif-avatar" [ngClass]="getNotifTypeClass(notif.type)">
+                  <span class="notif-icon">{{ getNotifIcon(notif.type) }}</span>
+                </div>
+                <div class="notif-content">
+                  <p class="notif-text">
+                    <strong>{{ notif.titre }}</strong>
+                    {{ notif.message }}
+                  </p>
+                  <span class="notif-time">{{ getTimeAgo(notif.timestamp) }}</span>
+                </div>
+                <div class="notif-unread-dot" *ngIf="!notif.lu"></div>
+                <div class="notif-actions">
+                  <button class="notif-action-btn" *ngIf="!notif.lu"
+                          (click)="marquerLue($event, notif)" title="Marquer comme lue">✓</button>
+                  <button class="notif-action-btn"
+                          (click)="archiverNotif($event, notif)" title="Archiver">📦</button>
+                  <button class="notif-action-btn danger"
+                          (click)="supprimerNotif($event, notif)" title="Supprimer">🗑</button>
+                </div>
+              </div>
+
+              <div class="notif-empty" *ngIf="notifications.length === 0">
+                <p>Aucune notification</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="stag-avatar-sm" (click)="setSection('profil')">{{ initials(stagiereName) }}</div>
+      </div>
+    </header>
+
+    <div class="stag-error" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+    <!-- ===================== ACCUEIL ===================== -->
+    <ng-container *ngIf="activeSection === 'accueil'">
+      <section class="stag-stats-grid">
+        <div class="stag-stat-card stag-stat-teal">
+          <div>
+            <p class="stag-stat-value">{{ totalLivrables }}</p>
+            <p class="stag-stat-label">Total livrables</p>
+          </div>
+        </div>
+        <div class="stag-stat-card stag-stat-amber">
+          <div>
+            <p class="stag-stat-value">{{ livrablesSoumis }}</p>
+            <p class="stag-stat-label">En attente</p>
+          </div>
+        </div>
+        <div class="stag-stat-card stag-stat-green">
+          <div>
+            <p class="stag-stat-value">{{ livrablesApprouves }}</p>
+            <p class="stag-stat-label">Approuvés</p>
+          </div>
+        </div>
+        <div class="stag-stat-card stag-stat-red">
+          <div>
+            <p class="stag-stat-value">{{ livrablesAReviser }}</p>
+            <p class="stag-stat-label">À réviser</p>
+          </div>
+        </div>
+      </section>
+
+      <div class="stag-row">
+        <div class="stag-card stag-stage-info" *ngIf="!loadingCandidature">
+          <div class="stag-card-header">
+            <h2>Informations de stage</h2>
+          </div>
+          <div *ngIf="candidature; else noCandidature">
+            <div class="stag-info-grid">
+              <div class="stag-info-item">
+                <span class="stag-info-label">Offre</span>
+                <span class="stag-info-value">{{ candidature?.offre?.titre || '—' }}</span>
+              </div>
+              <div class="stag-info-item">
+                <span class="stag-info-label">Département</span>
+                <span class="stag-info-value">{{ candidature?.offre?.departement || '—' }}</span>
+              </div>
+              <div class="stag-info-item">
+                <span class="stag-info-label">Encadrant</span>
+                <span class="stag-info-value">{{ candidature?.encadrant?.prenom }} {{ candidature?.encadrant?.nom }}</span>
+              </div>
+              <div class="stag-info-item">
+                <span class="stag-info-label">Statut</span>
+                <span class="stag-info-value"><span class="stag-badge badge-ok">Accepté</span></span>
+              </div>
+            </div>
+          </div>
+          <ng-template #noCandidature>
+            <div class="stag-empty-state">
+              <p>Vous n'avez pas encore de candidature acceptée.</p>
+              <button class="stag-btn-primary" (click)="setSection('offres')">Voir les offres disponibles</button>
+            </div>
+          </ng-template>
+        </div>
+
+        <div class="stag-card stag-progress-widget">
+          <div class="stag-card-header">
+            <h2>Ma progression</h2>
+          </div>
+          <div class="stag-donut-wrap">
+            <svg class="stag-donut" viewBox="0 0 120 120">
+              <circle cx="60" cy="60" r="50" fill="none" stroke="#e2f5f1" stroke-width="14"/>
+              <circle cx="60" cy="60" r="50" fill="none" stroke="url(#tealGrad)" stroke-width="14"
+                [attr.stroke-dasharray]="(progressionPct * 3.14) + ' 314'" stroke-dashoffset="78.5" stroke-linecap="round"/>
+              <defs>
+                <linearGradient id="tealGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" style="stop-color:#f6a821"/>
+                  <stop offset="100%" style="stop-color:#e2251b"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            <div class="stag-donut-label">
+              <span class="stag-donut-pct">{{ progressionPct }}%</span>
+              <span class="stag-donut-text">Complété</span>
+            </div>
+          </div>
+          <div class="stag-heures-info">
+            <p><strong>{{ heuresTravaillees }}h</strong> / {{ heuresObjectif }}h</p>
+            <p class="stag-muted">Heures travaillées</p>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- ===================== OFFRES ===================== -->
+    <ng-container *ngIf="activeSection === 'offres'">
+      <div class="stag-card" *ngIf="aUnStageActif"
+           style="border-left: 4px solid #f0782c; margin-bottom: 16px; padding: 16px;">
+        <p style="margin:0;">⚠️ Vous êtes actuellement affecté au stage « <strong>{{ stageActifTitre }}</strong> ».</p>
+      </div>
+
+      <div class="stag-card">
+        <div class="stag-card-header">
+          <h2>Offres disponibles <span class="stag-count-pill">{{ offres.length }}</span></h2>
+        </div>
+
+        <div class="stag-offres-grid" *ngIf="!loadingOffres && offres.length > 0">
+          <div class="stag-offre-card" *ngFor="let offre of offres">
+            <div class="stag-offre-header">
+              <h3>{{ offre.titre }}</h3>
+              <span class="stag-badge badge-ok">{{ offre.statut }}</span>
+            </div>
+            <p class="stag-offre-dept">{{ offre.departement || 'Général' }}</p>
+            <p class="stag-offre-desc">{{ offre.description || 'Description non disponible' }}</p>
+            <div class="stag-offre-footer">
+              <span class="stag-muted">📍 {{ offre.localisation || 'Tunis' }}</span>
+              <button class="stag-btn-primary" (click)="ouvrirPostulerModal(offre)" [disabled]="aUnStageActif">
+                Postuler
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="stag-empty-state" *ngIf="!loadingOffres && offres.length === 0">
+          <p>Aucune offre disponible.</p>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- ===================== LIVRABLES ===================== -->
+    <ng-container *ngIf="activeSection === 'livrables'">
+      <div class="stag-card">
+        <div class="stag-card-header">
+          <h2>Mes livrables <span class="stag-count-pill">{{ totalLivrables }}</span></h2>
+          <button class="stag-btn-primary" (click)="openLivrableModal()" *ngIf="candidature">
+            + Soumettre un livrable
+          </button>
+        </div>
+
+        <div *ngIf="livrables.length === 0" class="stag-empty-state">
+          <p>Aucun livrable soumis.</p>
+          <button class="stag-btn-primary" (click)="openLivrableModal()" *ngIf="candidature">
+            Soumettre mon premier livrable
+          </button>
+        </div>
+
+        <div class="stag-table-wrap" *ngIf="livrables.length > 0">
+          <table class="stag-table">
+            <thead>
+              <tr><th>Titre</th><th>Description</th><th>Lien</th><th>Statut</th></tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let l of livrables">
+                <td class="stag-fw600">{{ l.titre }}</td>
+                <td class="stag-muted">{{ l.description }}</td>
+                <td>
+                  <a *ngIf="l.lienFichier" [href]="l.lienFichier" target="_blank" class="stag-link">Voir</a>
+                  <span *ngIf="!l.lienFichier" class="stag-muted">—</span>
+                  <a *ngIf="l.fichierCorrectionUrl" [href]="l.fichierCorrectionUrl"
+                     target="_blank" class="correction-link">📎 Correction</a>
+                </td>
+                <td>
+                  <span class="stag-badge" [ngClass]="statutClass(l.statut)">{{ statutLabel(l.statut) }}</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- ===================== PROFIL ===================== -->
+    <ng-container *ngIf="activeSection === 'profil'">
+      <div class="stag-card stag-profil-card">
+        <div class="stag-card-header"><h2>Mon profil</h2></div>
+        <div class="stag-profil-body">
+          <div class="stag-profil-avatar">{{ initials(stagiereName) }}</div>
+          <div class="stag-profil-info">
+            <p class="stag-profil-name">{{ stagiereName }}</p>
+            <span class="stag-role-chip">Stagiaire</span>
+            <div class="stag-profil-fields">
+              <div class="stag-profil-field">
+                <label>Email</label><span>{{ currentUser?.email || '—' }}</span>
+              </div>
+              <div class="stag-profil-field">
+                <label>Téléphone</label><span>{{ currentUser?.telephone || '—' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- ===================== AIDE ===================== -->
+    <ng-container *ngIf="activeSection === 'aide'">
+      <div class="stag-aide-grid">
+        <div class="stag-card stag-aide-card">
+          <h3>Guide du stagiaire</h3>
+          <p>Consultez le guide complet.</p>
+          <button class="stag-btn-outline">Télécharger</button>
+        </div>
+        <div class="stag-card stag-aide-card">
+          <h3>Contacter les RH</h3>
+          <p>Pour toute question administrative.</p>
+          <button class="stag-btn-outline">Envoyer un email</button>
+        </div>
+        <div class="stag-card stag-aide-card">
+          <h3>Charte du stage</h3>
+          <p>Règles et engagements.</p>
+          <button class="stag-btn-outline">Consulter</button>
+        </div>
+        <div class="stag-card stag-aide-card">
+          <h3>Support technique</h3>
+          <p>Problème avec la plateforme ?</p>
+          <button class="stag-btn-outline">Créer un ticket</button>
+        </div>
+      </div>
+    </ng-container>
+  </main>
+
+  <!-- ===================== CHAT PANEL ===================== -->
+  <div class="side-panel" *ngIf="showChatPanel">
+    <div class="side-panel-header">
+      <h3>Chat avec {{ encadrant?.prenom }} {{ encadrant?.nom }}</h3>
+      <button class="side-panel-close" (click)="showChatPanel = false">✕</button>
+    </div>
+    <div class="chat-messages">
+      <div class="chat-message" *ngFor="let m of chatMessages" [class.mine]="m.isMoi">
+        <div class="chat-bubble">
+          <p class="chat-author">{{ m.auteur }}</p>
+          <p class="chat-text">{{ m.contenu }}</p>
+          <span class="chat-time">{{ getTimeAgo(m.date) }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="chat-input">
+      <input type="text" placeholder="Écrivez un message..."
+             [(ngModel)]="newMessage" (keyup.enter)="envoyerMessage()">
+      <button class="stag-btn-primary" (click)="envoyerMessage()">Envoyer</button>
+    </div>
+  </div>
+
+  <!-- ===================== MEET PANEL ===================== -->
+  <div class="side-panel side-panel-meet" *ngIf="showMeetPanel">
+
+    <div class="side-panel-header">
+      <h3>📹 Visioconférence</h3>
+      <button class="side-panel-close" (click)="showMeetPanel = false; arretMeet()">✕</button>
+    </div>
+
+    <!-- ============ PRÉJOIN (aperçu caméra) ============ -->
+    <div class="meet-prejoin" *ngIf="!meetActive">
+
+      <div class="meet-prejoin-header">
+        <h2>Prêt à rejoindre ?</h2>
+        <p class="meet-prejoin-sub">Vérifiez votre caméra et votre micro</p>
+      </div>
+
+      <div class="meet-prejoin-body">
+
+        <!-- Aperçu vidéo -->
+        <div class="meet-preview-box">
+          <video id="meet-preview-video-stag"
+                 autoplay playsinline muted
+                 [class.hidden]="!meetDeviceSelection.videoEnabled"></video>
+
+          <div class="meet-preview-off" *ngIf="!meetDeviceSelection.videoEnabled">
+            <div class="meet-preview-off-avatar">{{ initials(stagiereName) }}</div>
+            <p>Caméra désactivée</p>
+          </div>
+
+          <div class="meet-preview-loading" *ngIf="meetPreviewLoading">
+            <div class="meet-spinner"></div>
+            <p>Activation…</p>
+          </div>
+
+          <div class="meet-preview-controls">
+            <button class="meet-circle-btn" [class.off]="!meetDeviceSelection.audioEnabled"
+                    (click)="togglePreviewAudio()">
+              <span>{{ meetDeviceSelection.audioEnabled ? '🎤' : '🔇' }}</span>
+            </button>
+            <button class="meet-circle-btn" [class.off]="!meetDeviceSelection.videoEnabled"
+                    (click)="togglePreviewVideo()">
+              <span>{{ meetDeviceSelection.videoEnabled ? '📷' : '📵' }}</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Paramètres -->
+        <div class="meet-settings-box">
+          <h3>Paramètres</h3>
+
+          <div class="meet-setting-group" *ngIf="meetVideoDevices.length > 0">
+            <label>📷 Caméra</label>
+            <select (change)="changerCamera($event)" [value]="meetDeviceSelection.videoDeviceId">
+              <option value="">Caméra par défaut</option>
+              <option *ngFor="let d of meetVideoDevices" [value]="d.deviceId">
+                {{ d.label || 'Caméra' }}
+              </option>
+            </select>
+          </div>
+
+          <div class="meet-setting-group" *ngIf="meetAudioDevices.length > 0">
+            <label>🎤 Microphone</label>
+            <select (change)="changerMicro($event)" [value]="meetDeviceSelection.audioDeviceId">
+              <option value="">Micro par défaut</option>
+              <option *ngFor="let d of meetAudioDevices" [value]="d.deviceId">
+                {{ d.label || 'Micro' }}
+              </option>
+            </select>
+          </div>
+
+          <div class="meet-preview-error" *ngIf="meetPreviewError">⚠️ {{ meetPreviewError }}</div>
+        </div>
+      </div>
+
+      <div class="meet-prejoin-actions">
+        <button class="meet-btn-cancel" (click)="showMeetPanel = false; arretMeet()">Annuler</button>
+        <button class="meet-btn-join" (click)="rejoindreMeet()" [disabled]="meetPreviewLoading">
+          🎥 Rejoindre
+        </button>
+      </div>
+    </div>
+
+    <!-- ============ CONFÉRENCE ACTIVE ============ -->
+    <div class="meet-active-wrapper-stag" *ngIf="meetActive">
+
+      <button class="meet-close-btn" (click)="arretMeet()" title="Fermer la visioconférence">✕</button>
+
+      <div class="meet-topbar">
+        <div class="meet-topbar-left">
+          <span class="meet-recording-dot"></span>
+          <span class="meet-topbar-title">Stage — {{ encadrant?.prenom }} {{ encadrant?.nom }}</span>
+          <span class="meet-timer-pill">{{ getMeetTime() }}</span>
+        </div>
+        <div class="meet-topbar-right">
+          <button class="meet-topbar-btn" (click)="copierLien()">🔗 Copier le lien</button>
+        </div>
+      </div>
+
+      <div class="meet-main">
+        <!-- ⚠️ CONTENEUR JITSI -->
+        <div class="meet-stage">
+          <div id="jitsi-container-stag" class="jitsi-container"></div>
+        </div>
+
+        <!-- Panneau latéral -->
+        <aside class="meet-side-panel">
+          <div class="meet-panel-tabs">
+            <button [class.active]="meetPanelTab === 'participants'"
+                    (click)="meetPanelTab = 'participants'">
+              👥 <span class="meet-tab-count">{{ meetParticipants.length + 1 }}</span>
+            </button>
+            <button [class.active]="meetPanelTab === 'chat'" (click)="meetPanelTab = 'chat'">💬</button>
+            <button [class.active]="meetPanelTab === 'info'" (click)="meetPanelTab = 'info'">ℹ️</button>
+          </div>
+
+          <!-- Participants -->
+          <div class="meet-panel-content" *ngIf="meetPanelTab === 'participants'">
+            <div class="meet-participant-row me">
+              <div class="meet-participant-avatar">{{ initials(stagiereName) }}</div>
+              <div class="meet-participant-info">
+                <span class="meet-participant-name">{{ stagiereName }} (vous)</span>
+                <span class="meet-participant-role">Stagiaire</span>
+              </div>
+              <span class="meet-mic-status">{{ myMicOn ? '🎤' : '🔇' }}</span>
+            </div>
+
+            <div class="meet-participant-row" *ngFor="let p of meetParticipants">
+              <div class="meet-participant-avatar alt">{{ p.displayName.charAt(0) }}</div>
+              <div class="meet-participant-info">
+                <span class="meet-participant-name">{{ p.displayName }}</span>
+                <span class="meet-participant-role">Participant</span>
+              </div>
+            </div>
+
+            <p class="meet-empty" *ngIf="meetParticipants.length === 0">
+              En attente de participants…
+            </p>
+          </div>
+
+          <!-- Chat -->
+          <div class="meet-panel-content" *ngIf="meetPanelTab === 'chat'">
+            <div class="meet-chat-messages">
+              <div class="meet-chat-msg" *ngFor="let m of meetChatMessages">
+                <span class="meet-chat-author">{{ m.author }}</span>
+                <span class="meet-chat-time">{{ m.time }}</span>
+                <p>{{ m.text }}</p>
+              </div>
+              <p class="meet-empty" *ngIf="meetChatMessages.length === 0">Aucun message</p>
+            </div>
+            <div class="meet-chat-input">
+              <input type="text" placeholder="Écrire…" [(ngModel)]="meetChatInput"
+                     (keyup.enter)="envoyerMeetChat()" />
+              <button (click)="envoyerMeetChat()">➤</button>
+            </div>
+          </div>
+
+          <!-- Info -->
+          <div class="meet-panel-content" *ngIf="meetPanelTab === 'info'">
+            <p><strong>Durée :</strong> {{ getMeetTime() }}</p>
+            <p><strong>Salle :</strong> {{ meetRoomName }}</p>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== MODAL POSTULER ===================== -->
+  <div class="stag-modal-overlay" *ngIf="showPostulerModal" (click)="fermerPostulerModal()">
+    <div class="stag-modal-box" (click)="$event.stopPropagation()">
+      <div class="stag-modal-header">
+        <h3>Postuler : {{ selectedOffre?.titre }}</h3>
+        <button class="stag-modal-close" (click)="fermerPostulerModal()">Fermer</button>
+      </div>
+      <div class="stag-modal-error" *ngIf="postulerError">{{ postulerError }}</div>
+      <div class="stag-modal-success" *ngIf="postulerSuccess">{{ postulerSuccess }}</div>
+
+      <div class="stag-form-fields">
+        <div class="stag-form-field">
+          <label>CV (PDF) *</label>
+          <input type="file" accept="application/pdf" (change)="onCvChange($event)">
+          <p class="stag-file-info" *ngIf="cvFile">✅ {{ cvFile.name }}</p>
+        </div>
+
+        <div class="stag-form-field">
+          <label>Demande de stage (PDF) *</label>
+          <input type="file" accept="application/pdf" (change)="onDemandeStageChange($event)">
+          <p class="stag-file-info" *ngIf="demandeStageFile">✅ {{ demandeStageFile.name }}</p>
+        </div>
+
+        <div class="stag-form-field">
+          <label>Lettre de motivation *</label>
+          <textarea [(ngModel)]="postulerForm.lettreMotivation" rows="4"></textarea>
+        </div>
+
+        <div class="stag-form-field">
+          <label>Téléphone *</label>
+          <input type="tel" [(ngModel)]="postulerForm.telephone">
+        </div>
+
+        <div class="stag-form-field">
+          <label>Niveau d'étude *</label>
+          <select [(ngModel)]="postulerForm.niveauEtude">
+            <option value="">Sélectionner</option>
+            <option value="BAC+2">Bac+2</option>
+            <option value="BAC+3">Bac+3</option>
+            <option value="BAC+4">Bac+4</option>
+            <option value="BAC+5">Bac+5</option>
+          </select>
+        </div>
+
+        <div class="stag-form-field">
+          <label>Université *</label>
+          <input type="text" [(ngModel)]="postulerForm.universite">
+        </div>
+      </div>
+
+      <div class="stag-modal-actions">
+        <button class="stag-btn-outline" (click)="fermerPostulerModal()">Annuler</button>
+        <button class="stag-btn-primary" (click)="postuler()" [disabled]="submittingPostuler">
+          {{ submittingPostuler ? 'Envoi...' : 'Envoyer' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== MODAL LIVRABLE ===================== -->
+  <div class="stag-modal-overlay" *ngIf="showLivrableModal" (click)="closeLivrableModal()">
+    <div class="stag-modal-box" (click)="$event.stopPropagation()">
+      <div class="stag-modal-header">
+        <h3>Soumettre un livrable</h3>
+        <button class="stag-modal-close" (click)="closeLivrableModal()">Fermer</button>
+      </div>
+      <div class="stag-modal-error" *ngIf="livrableError">{{ livrableError }}</div>
+
+      <div class="stag-form-fields">
+        <div class="stag-form-field">
+          <label>Titre *</label>
+          <input type="text" [(ngModel)]="livrableForm.titre">
+        </div>
+        <div class="stag-form-field">
+          <label>Description *</label>
+          <textarea [(ngModel)]="livrableForm.description" rows="3"></textarea>
+        </div>
+        <div class="stag-form-field">
+          <label>Lien (optionnel)</label>
+          <input type="url" [(ngModel)]="livrableForm.lienFichier">
+        </div>
+      </div>
+
+      <div class="stag-modal-actions">
+        <button class="stag-btn-outline" (click)="closeLivrableModal()">Annuler</button>
+        <button class="stag-btn-primary" (click)="submitLivrable()" [disabled]="savingLivrable">
+          {{ savingLivrable ? 'Envoi...' : 'Soumettre' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== APPEL ENTRANT ===================== -->
+  <app-incoming-call
+    [visible]="showIncomingCall"
+    [callerName]="incomingCallFrom"
+    [callerRole]="incomingCallRole"
+    [callerInitials]="incomingCallInitials"
+    (accept)="accepterAppel()"
+    (refuse)="refuserAppel()">
+  </app-incoming-call>
+
+  <!-- ===================== TOAST ===================== -->
+  <div class="toast-container" *ngIf="showToast">
+    <div class="toast" [ngClass]="getToastClass()">
+      <span class="toast-icon">{{ getToastIcon() }}</span>
+      <span class="toast-message">{{ toastMessage }}</span>
+      <button class="toast-close" (click)="closeToast()">✕</button>
+    </div>
+  </div>
+</div>

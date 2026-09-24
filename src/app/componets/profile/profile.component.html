@@ -1,0 +1,175 @@
+<div class="dash-layout">
+
+  <!-- ===================== SIDEBAR ===================== -->
+  <aside class="sidebar">
+    <a [routerLink]="dashboardRoute" class="brand">
+      <img
+        src="assets/images/attijari-logo-removebg-preview.png"
+        alt="Attijari Bank"
+        class="brand-logo"
+      >
+    </a>
+
+    <div class="sidebar-user-card">
+      <div class="sidebar-avatar">{{ getInitials() }}</div>
+      <div>
+        <p class="sidebar-user-name">{{ currentUser?.prenom }} {{ currentUser?.nom }}</p>
+        <span class="sidebar-role-badge">{{ roleLabel }}</span>
+      </div>
+    </div>
+
+    <button class="nav-primary" [routerLink]="dashboardRoute">
+      Tableau de bord
+    </button>
+
+    <nav class="nav-group">
+      <p class="nav-group-title">Mon compte</p>
+      <a class="nav-item active" routerLink="/profile">Mon profil</a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="secure-card">
+        <div>
+          <p class="secure-title">Sécurisé &amp; Fiable</p>
+          <p class="secure-text">Vos données sont protégées selon les standards les plus élevés.</p>
+        </div>
+      </div>
+      <button class="logout-btn" (click)="onLogout()">
+        Se déconnecter
+      </button>
+    </div>
+  </aside>
+
+  <!-- ===================== MAIN CONTENT ===================== -->
+  <main class="main">
+
+    <header class="topbar">
+      <div>
+        <button class="back-btn" (click)="goBack()" style="margin-bottom:8px;">← Retour</button>
+        <h1>Mon profil</h1>
+        <p class="subtitle">{{ currentUser?.prenom }} {{ currentUser?.nom }} · {{ roleLabel }}</p>
+      </div>
+      <div class="topbar-right">
+        <div class="admin-chip">
+          <div class="avatar-circle">{{ getInitials() }}</div>
+          <div>
+            <p class="admin-name">{{ currentUser?.prenom }} {{ currentUser?.nom }}</p>
+            <p class="admin-role">{{ roleLabel }}</p>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="profile-page">
+
+      <!-- ===== SECTION : PHOTO + INFOS RESUME ===== -->
+      <div class="profile-hero">
+        <div class="photo-zone">
+          <div class="avatar-big">
+            <img *ngIf="photoPreview" [src]="photoPreview" class="avatar-img" alt="Photo de profil">
+            <span *ngIf="!photoPreview">{{ getInitials() }}</span>
+          </div>
+          <div class="photo-actions">
+            <label class="btn-upload">
+              📷 Changer la photo
+              <input type="file" accept=".jpg,.jpeg,.png" (change)="onPhotoSelected($event)" hidden>
+            </label>
+            <button class="btn-primary-sm" (click)="enregistrerPhoto()"
+                    [disabled]="!selectedPhotoFile || uploadingPhoto">
+              {{ uploadingPhoto ? 'Envoi...' : 'Enregistrer' }}
+            </button>
+          </div>
+          <div class="alert-error" *ngIf="photoError">{{ photoError }}</div>
+          <div class="alert-success" *ngIf="photoSuccess">{{ photoSuccess }}</div>
+        </div>
+
+        <div class="hero-info">
+          <h2>{{ currentUser?.prenom }} {{ currentUser?.nom }}</h2>
+          <span class="role-badge-big">{{ roleLabel }}</span>
+          <p class="hero-email">{{ currentUser?.email }}</p>
+          <p class="hero-tel" *ngIf="currentUser?.telephone">📞 {{ currentUser?.telephone }}</p>
+        </div>
+      </div>
+
+      <!-- ===== SECTION : INFORMATIONS PERSONNELLES ===== -->
+      <div class="profile-card">
+        <div class="card-section-title">
+          <span class="section-icon">👤</span>
+          <h3>Informations personnelles</h3>
+        </div>
+
+        <div class="alert-error" *ngIf="infosError">{{ infosError }}</div>
+        <div class="alert-success" *ngIf="infosSuccess">{{ infosSuccess }}</div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Prénom</label>
+            <input type="text" [(ngModel)]="form.prenom" placeholder="Votre prénom">
+          </div>
+          <div class="form-group">
+            <label>Nom</label>
+            <input type="text" [(ngModel)]="form.nom" placeholder="Votre nom">
+          </div>
+        </div>
+
+        <div class="form-row full">
+          <div class="form-group">
+            <label>Adresse e-mail</label>
+            <input type="email" [(ngModel)]="form.email" placeholder="votre@email.com">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Téléphone</label>
+            <input type="tel" [(ngModel)]="form.telephone" placeholder="+216...">
+          </div>
+          <div class="form-group">
+            <label>Adresse</label>
+            <input type="text" [(ngModel)]="form.adresse" placeholder="Votre adresse">
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <button class="btn-primary" (click)="enregistrerInfos()" [disabled]="savingInfos">
+            {{ savingInfos ? 'Enregistrement...' : '💾 Enregistrer les modifications' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- ===== SECTION : MOT DE PASSE ===== -->
+      <div class="profile-card">
+        <div class="card-section-title">
+          <span class="section-icon">🔒</span>
+          <h3>Changer le mot de passe</h3>
+        </div>
+
+        <div class="alert-error" *ngIf="passwordError">{{ passwordError }}</div>
+        <div class="alert-success" *ngIf="passwordSuccess">{{ passwordSuccess }}</div>
+
+        <div class="form-row full">
+          <div class="form-group">
+            <label>Nouveau mot de passe</label>
+            <input type="password" [(ngModel)]="passwordForm.nouveauMotDePasse"
+                   placeholder="Au moins 6 caractères">
+          </div>
+        </div>
+        <div class="form-row full">
+          <div class="form-group">
+            <label>Confirmer le nouveau mot de passe</label>
+            <input type="password" [(ngModel)]="passwordForm.confirmation"
+                   placeholder="Répétez le mot de passe">
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <button class="btn-primary" (click)="changerMotDePasse()" [disabled]="savingPassword">
+            {{ savingPassword ? 'Enregistrement...' : '🔑 Changer le mot de passe' }}
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+</div>

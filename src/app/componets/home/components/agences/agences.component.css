@@ -1,0 +1,286 @@
+/* ============================================================
+   VARIABLES
+   ============================================================ */
+:host {
+  --ab-red: #e2251b;
+  --ab-orange: #f6871f;
+  --ab-gradient: linear-gradient(135deg, #f6a821 0%, #e2251b 100%);
+  --ab-text: #0f172a;
+  --ab-text-muted: #64748b;
+  --ab-text-soft: #94a3b8;
+  --ab-border: #e2e8f0;
+
+  display: block;
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ============================================================
+   SECTION
+   ============================================================ */
+.agences-section {
+  padding: 100px 60px;
+  background: #ffffff;
+  border-top: 1px solid var(--ab-border);
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 72px;
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.section-header .section-label {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--ab-orange);
+  margin-bottom: 16px;
+}
+
+.section-header .section-line-center {
+  width: 48px;
+  height: 3px;
+  background: var(--ab-gradient);
+  border-radius: 2px;
+  margin: 0 auto 20px;
+}
+
+.section-header h2 {
+  font-size: 46px;
+  font-weight: 800;
+  color: var(--ab-text);
+  margin-bottom: 16px;
+  letter-spacing: -1.5px;
+  line-height: 1.1;
+}
+
+.section-desc {
+  font-size: 17px;
+  color: var(--ab-text-muted);
+}
+
+/* ============================================================
+   GRILLE
+   ============================================================ */
+.agences-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* ============================================================
+   CARTE AGENCE
+   ============================================================ */
+.agence-card {
+  position: relative;
+  background: #ffffff;
+  border: 1px solid var(--ab-border);
+  border-radius: 20px;
+  padding: 40px 32px 32px;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  min-height: 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.agence-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--ab-gradient);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s ease;
+}
+
+.agence-card:hover {
+  transform: translateY(-8px);
+  border-color: transparent;
+  box-shadow:
+    0 20px 40px rgba(226, 37, 27, 0.10),
+    0 4px 12px rgba(15, 23, 42, 0.05);
+}
+
+.agence-card:hover::before {
+  transform: scaleX(1);
+}
+
+/* Badge numéro / point */
+.agence-numero {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #fff7ed 0%, #fef2f2 100%);
+  color: var(--ab-red);
+  font-size: 12px;
+  font-weight: 900;
+  border: 1.5px solid rgba(226, 37, 27, 0.15);
+  margin-bottom: 12px;
+  transition: all 0.4s ease;
+}
+
+.agence-numero::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ab-red);
+  box-shadow: 0 0 8px rgba(226, 37, 27, 0.6);
+}
+
+.agence-card:hover .agence-numero {
+  background: var(--ab-gradient);
+  border-color: transparent;
+  transform: scale(1.08);
+  box-shadow: 0 8px 20px rgba(226, 37, 27, 0.35);
+}
+
+.agence-card:hover .agence-numero::before {
+  background: #ffffff;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.9);
+}
+
+/* Titre */
+.agence-card h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ab-text);
+  letter-spacing: -0.4px;
+  margin: 0 0 4px;
+  transition: color 0.3s ease;
+}
+
+.agence-card:hover h3 {
+  color: var(--ab-red);
+}
+
+/* Ville (avec ligne décorative) */
+.agence-ville {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--ab-red);
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  margin: 0 0 8px;
+}
+
+.agence-ville::before {
+  content: '';
+  width: 12px;
+  height: 1.5px;
+  background: var(--ab-gradient);
+  border-radius: 2px;
+}
+
+/* Adresse */
+.agence-adresse {
+  font-size: 14.5px;
+  color: var(--ab-text-muted);
+  line-height: 1.6;
+  margin: 0 0 16px;
+  flex: 1;
+}
+
+/* Meta (tel + horaires) */
+.agence-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 16px;
+  border-top: 1px solid var(--ab-border);
+  margin-top: auto;
+}
+
+.agence-meta-item {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 0;
+  font-size: 13px;
+}
+
+.meta-label {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ab-text-soft);
+  min-width: 60px;
+}
+
+.meta-value {
+  color: var(--ab-text);
+  font-weight: 600;
+}
+
+/* ============================================================
+   SKELETON
+   ============================================================ */
+.skeleton-card {
+  height: 260px;
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 20px;
+  border: 1px solid var(--ab-border);
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ============================================================
+   ANIMATION
+   ============================================================ */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.agence-card {
+  animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) backwards;
+}
+.agence-card:nth-child(1) { animation-delay: 0.05s; }
+.agence-card:nth-child(2) { animation-delay: 0.10s; }
+.agence-card:nth-child(3) { animation-delay: 0.15s; }
+.agence-card:nth-child(4) { animation-delay: 0.20s; }
+.agence-card:nth-child(5) { animation-delay: 0.25s; }
+.agence-card:nth-child(6) { animation-delay: 0.30s; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 992px) {
+  .agences-section { padding: 70px 30px; }
+  .section-header h2 { font-size: 34px; }
+  .section-header { margin-bottom: 48px; }
+  .agences-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 640px) {
+  .agences-section { padding: 50px 20px; }
+  .section-header h2 { font-size: 28px; }
+  .agences-grid { grid-template-columns: 1fr; gap: 18px; }
+  .agence-card { padding: 32px 26px 26px; min-height: 220px; }
+  .agence-card h3 { font-size: 18px; }
+}

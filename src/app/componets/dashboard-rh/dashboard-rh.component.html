@@ -1,0 +1,627 @@
+<div class="dash-layout">
+
+  <!-- ===================== SIDEBAR ===================== -->
+  <aside class="sidebar">
+    <a routerLink="/" class="brand">
+      <img src="assets/images/attijari-logo.png" alt="Attijari Bank - Workspace" class="brand-logo" />
+    </a>
+
+    <div class="sidebar-user-card">
+      <div class="sidebar-avatar">{{ adminName | slice:0:2 | uppercase }}</div>
+      <div>
+        <p class="sidebar-user-name">{{ adminName }}</p>
+        <span class="sidebar-role-badge">{{ adminRole }}</span>
+      </div>
+    </div>
+
+    <button class="nav-primary" [class.active]="activeRoute === 'dashboard'" (click)="setRoute('dashboard')">
+      Tableau de bord
+    </button>
+
+    <nav class="nav-group">
+      <p class="nav-group-title">Recrutement</p>
+      <button class="nav-item" [class.active]="activeRoute === 'offres'" (click)="setRoute('offres')">Offres</button>
+      <button class="nav-item" [class.active]="activeRoute === 'candidatures'" (click)="setRoute('candidatures')">Candidatures</button>
+    </nav>
+
+    <nav class="nav-group">
+      <p class="nav-group-title">Supervision</p>
+      <button class="nav-item" [class.active]="activeRoute === 'recruteurs'" (click)="setRoute('recruteurs')">Recruteurs</button>
+    </nav>
+
+    <nav class="nav-group">
+      <p class="nav-group-title">Mon compte</p>
+      <a class="nav-item" routerLink="/profile">Mon profil</a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="logout-btn" (click)="onLogout()">Se déconnecter</button>
+    </div>
+  </aside>
+
+  <!-- ===================== MAIN ===================== -->
+  <main class="main">
+
+    <header class="topbar">
+      <div>
+        <h1>
+          <ng-container *ngIf="activeRoute === 'dashboard'">Tableau de bord</ng-container>
+          <ng-container *ngIf="activeRoute === 'offres'">Offres</ng-container>
+          <ng-container *ngIf="activeRoute === 'candidatures'">Candidatures</ng-container>
+          <ng-container *ngIf="activeRoute === 'recruteurs'">Recruteurs</ng-container>
+        </h1>
+        <p class="subtitle">
+          <ng-container *ngIf="activeRoute === 'dashboard'">Bienvenue, {{ adminName }} — Gestion du recrutement.</ng-container>
+          <ng-container *ngIf="activeRoute !== 'dashboard'">{{ adminName }} · {{ adminRole }}</ng-container>
+        </p>
+      </div>
+
+      <div class="topbar-right">
+        <div class="notif-wrapper">
+          <button class="icon-btn" (click)="toggleNotifications()">
+            <span class="bell">🔔</span>
+            <span class="badge" *ngIf="notificationCount > 0">{{ notificationCount }}</span>
+          </button>
+
+          <div class="notif-dropdown" *ngIf="showNotifications">
+            <div class="notif-header">
+              <span>Notifications</span>
+              <button class="notif-clear" (click)="marquerToutesLues()" *ngIf="notificationCount > 0">
+                Tout marquer comme lu
+              </button>
+            </div>
+
+            <div class="notif-empty" *ngIf="notifications.length === 0">Aucune notification</div>
+
+            <div class="notif-list">
+              <div class="notif-item" *ngFor="let n of notifications"
+                   [class.unread]="!n.lu"
+                   (click)="marquerNotificationLue(n)">
+                <p class="notif-title">{{ n.titre }}</p>
+                <p class="notif-msg">{{ n.message }}</p>
+                <p class="notif-date">{{ n.timestamp | date:'short' }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-chip">
+          <div class="avatar-circle">{{ adminName | slice:0:2 | uppercase }}</div>
+          <div>
+            <p class="admin-name">{{ adminName }}</p>
+            <p class="admin-role">{{ adminRole }}</p>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="error-banner" *ngIf="errorMessage">⚠ {{ errorMessage }}</div>
+
+    <!-- ===================== DASHBOARD HOME ===================== -->
+    <ng-container *ngIf="activeRoute === 'dashboard'">
+
+      <!-- STATS CARDS -->
+      <section class="stats-grid">
+        <ng-container *ngIf="!offresLoading; else statsSkeleton">
+          <div class="stat-card" *ngFor="let s of stats" [ngClass]="s.accentClass">
+            <div class="stat-body">
+              <p class="stat-value">{{ s.value }}</p>
+              <p class="stat-label">{{ s.label }}</p>
+            </div>
+            <div class="stat-arrow">→</div>
+          </div>
+        </ng-container>
+
+        <ng-template #statsSkeleton>
+          <div class="stat-card skeleton" *ngFor="let i of [1,2,3,4]">
+            <div class="stat-body">
+              <div class="skeleton-line w40"></div>
+              <div class="skeleton-line w70"></div>
+            </div>
+          </div>
+        </ng-template>
+      </section>
+
+      <!-- QUICK ACTIONS ALIGNÉES -->
+      <section class="quick-actions-row">
+        <button class="quick-action-card" (click)="openOffreModal()">
+          <span class="qa-icon">📋</span>
+          <span class="qa-label">Nouvelle offre</span>
+        </button>
+        <button class="quick-action-card" (click)="openOffrePfeModal()">
+          <span class="qa-icon">🎓</span>
+          <span class="qa-label">Nouvelle offre PFE</span>
+        </button>
+        <button class="quick-action-card" (click)="setRoute('offres')">
+          <span class="qa-icon">👁️</span>
+          <span class="qa-label">Voir les offres</span>
+        </button>
+        <button class="quick-action-card" (click)="openBookPfeAnneeModal()">
+          <span class="qa-icon">📄</span>
+          <span class="qa-label">Book PFE par année</span>
+        </button>
+      </section>
+
+      <!-- DERNIÈRES CANDIDATURES -->
+      <section class="table-card">
+        <div class="table-header">
+          <h2>Dernières candidatures <span class="count-pill">{{ candidatures.length }}</span></h2>
+          <div class="table-actions">
+            <button class="btn-outline" (click)="setRoute('candidatures')">Tout voir</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table class="users-table" *ngIf="!candidaturesLoading; else simpleLoading">
+            <thead>
+              <tr>
+                <th>Candidat</th>
+                <th>Offre</th>
+                <th>Statut</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let c of candidatures.slice(0,5)">
+                <td class="fw600">{{ c.candidat?.prenom }} {{ c.candidat?.nom }}</td>
+                <td class="muted">{{ c.offre?.titre || '—' }}</td>
+                <td><span class="role-badge" [ngClass]="statutBadgeClass(c.statut)">{{ c.statut }}</span></td>
+                <td>
+                  <div class="row-actions" *ngIf="c.statut === 'EN_ATTENTE' || c.statut === 'EN_ANALYSE'">
+                    <button class="row-btn edit" (click)="deciderCandidature(c, 'ACCEPTE')">Accepter</button>
+                    <button class="row-btn delete" (click)="deciderCandidature(c, 'REFUSE')">Refuser</button>
+                  </div>
+                  <span *ngIf="c.statut === 'ACCEPTE'" class="badge-green">Acceptée</span>
+                  <span *ngIf="c.statut === 'REFUSE'" class="badge-red">Refusée</span>
+                  <span *ngIf="c.statut === 'ENTRETIEN_PLANIFIE'" class="badge-purple">Entretien</span>
+                </td>
+              </tr>
+              <tr *ngIf="candidatures.length === 0"><td colspan="4" class="empty-row">Aucune candidature.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </ng-container>
+
+    <!-- ===================== OFFRES ===================== -->
+    <section class="table-card" *ngIf="activeRoute === 'offres'">
+      <div class="table-header">
+        <h2>Offres <span class="count-pill">{{ offres.length }}</span></h2>
+    <div class="table-actions">
+  <button class="btn-pfe" (click)="openOffrePfeModal()">
+    <span class="btn-icon">🎓</span>
+    <span>+ Offre PFE</span>
+  </button>
+  <button class="btn-primary" (click)="openOffreModal()">
+    <span class="btn-icon">+</span>
+    <span>Nouvelle offre</span>
+  </button>
+  <button class="btn-book" (click)="openBookPfeAnneeModal()">
+    <span class="btn-icon">📄</span>
+    <span>Book PFE par année</span>
+  </button>
+</div>
+      </div>
+
+      <div class="table-wrap">
+        <table class="users-table" *ngIf="!offresLoading; else simpleLoading">
+          <thead>
+            <tr>
+              <th>Titre</th>
+              <th>Type</th>
+              <th>Département</th>
+              <th>Lieu</th>
+              <th>Statut</th>
+              <th>Publiée le</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let o of offresPaginees">
+              <td class="fw600">{{ o.titre }}</td>
+              <td>
+                <span class="type-badge"
+                      [class.emploi]="o.type === 'EMPLOI'"
+                      [class.pfe]="o.type === 'STAGE_PFE'">
+                  {{ o.type === 'EMPLOI' ? 'Emploi' : (o.type === 'STAGE_PFE' ? 'Stage PFE' : 'Stage') }}
+                </span>
+              </td>
+              <td class="muted">{{ o.departement || '—' }}</td>
+              <td class="muted">{{ o.lieu || '—' }}</td>
+              <td><span class="role-badge" [ngClass]="statutBadgeClass(o.statut)">{{ o.statut }}</span></td>
+              <td class="muted">{{ o.datePublication || '—' }}</td>
+              <td>
+                <div class="row-actions">
+                  <button *ngIf="o.type === 'STAGE_PFE'"
+                          class="row-btn book"
+                          (click)="telechargerBookPfeParOffre(o)"
+                          title="Télécharger le Book PFE de cette offre">
+                    📄 Book PFE
+                  </button>
+                  <button class="row-btn edit" (click)="modifierOffre(o)">Modifier</button>
+                  <button class="row-btn delete" (click)="deleteOffre(o)">Supprimer</button>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="offres.length === 0"><td colspan="7" class="empty-row">Aucune offre publiée.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 🔽 PAGINATION OFFRES -->
+      <div class="pagination" *ngIf="offresTotalPages > 1">
+        <button class="page-btn" [disabled]="offresPage === 1" (click)="changerPageOffres(offresPage - 1)">‹</button>
+        <button *ngFor="let p of pagesOffres"
+                class="page-btn"
+                [class.active]="p === offresPage"
+                (click)="changerPageOffres(p)">
+          {{ p }}
+        </button>
+        <button class="page-btn" [disabled]="offresPage === offresTotalPages" (click)="changerPageOffres(offresPage + 1)">›</button>
+        <span class="page-info">{{ offresPage }} / {{ offresTotalPages }} — {{ offres.length }} offres</span>
+      </div>
+    </section>
+
+    <!-- ===================== CANDIDATURES ===================== -->
+    <section class="table-card" *ngIf="activeRoute === 'candidatures'">
+      <div class="table-header">
+        <h2>Candidatures <span class="count-pill">{{ candidatures.length }}</span></h2>
+      </div>
+
+      <div class="table-wrap">
+        <table class="users-table" *ngIf="!candidaturesLoading; else simpleLoading">
+          <thead>
+            <tr>
+              <th>Candidat</th>
+              <th>Offre</th>
+              <th>Statut</th>
+              <th>Encadrant</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let c of candidaturesPaginees">
+              <td class="fw600">{{ c.candidat?.prenom }} {{ c.candidat?.nom }}</td>
+              <td class="muted">{{ c.offre?.titre || '—' }}</td>
+              <td><span class="role-badge" [ngClass]="statutBadgeClass(c.statut)">{{ c.statut }}</span></td>
+              <td class="muted">{{ c.encadrant?.prenom || 'Non affecté' }} {{ c.encadrant?.nom || '' }}</td>
+              <td>
+                <div class="row-actions" *ngIf="c.statut === 'EN_ATTENTE' || c.statut === 'EN_ANALYSE'">
+                  <button class="row-btn edit" (click)="deciderCandidature(c, 'ACCEPTE')">Accepter</button>
+                  <button class="row-btn delete" (click)="deciderCandidature(c, 'REFUSE')">Refuser</button>
+                </div>
+                <div class="row-actions" *ngIf="c.statut === 'ACCEPTE' && !c.encadrant">
+                  <button class="row-btn edit" (click)="openAffecterEncadrant(c)">Affecter encadrant</button>
+                </div>
+                <span *ngIf="c.statut === 'ACCEPTE' && c.encadrant" class="badge-green">Encadrant affecté</span>
+                <span *ngIf="c.statut === 'ACCEPTE' && !c.encadrant" class="badge-orange">En attente encadrant</span>
+                <span *ngIf="c.statut === 'REFUSE'" class="badge-red">Refusée</span>
+                <span *ngIf="c.statut === 'ENTRETIEN_PLANIFIE'" class="badge-purple">Entretien</span>
+              </td>
+            </tr>
+            <tr *ngIf="candidatures.length === 0"><td colspan="5" class="empty-row">Aucune candidature.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 🔽 PAGINATION CANDIDATURES -->
+      <div class="pagination" *ngIf="candidaturesTotalPages > 1">
+        <button class="page-btn" [disabled]="candidaturesPage === 1" (click)="changerPageCandidatures(candidaturesPage - 1)">‹</button>
+        <button *ngFor="let p of pagesCandidatures"
+                class="page-btn"
+                [class.active]="p === candidaturesPage"
+                (click)="changerPageCandidatures(p)">
+          {{ p }}
+        </button>
+        <button class="page-btn" [disabled]="candidaturesPage === candidaturesTotalPages" (click)="changerPageCandidatures(candidaturesPage + 1)">›</button>
+        <span class="page-info">{{ candidaturesPage }} / {{ candidaturesTotalPages }} — {{ candidatures.length }} candidatures</span>
+      </div>
+    </section>
+
+    <!-- ===================== RECRUTEURS ===================== -->
+    <section class="table-card" *ngIf="activeRoute === 'recruteurs'">
+      <div class="table-header">
+        <h2>Recruteurs <span class="count-pill">{{ recruteurs.length }}</span></h2>
+      </div>
+
+      <div class="table-wrap">
+        <table class="users-table" *ngIf="!offresLoading; else simpleLoading">
+          <thead>
+            <tr>
+              <th>Recruteur</th>
+              <th>Email</th>
+              <th>Téléphone</th>
+              <th>Statut</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let r of recruteursPagines">
+              <td>
+                <div class="user-cell">
+                  <div class="avatar-initials">{{ initials(r) }}</div>
+                  {{ r.prenom }} {{ r.nom }}
+                </div>
+              </td>
+              <td class="muted">{{ r.email }}</td>
+              <td class="muted">{{ r.telephone || '—' }}</td>
+              <td>
+                <span class="status-dot" [class.online]="r.actif"></span>
+                {{ r.actif ? 'Actif' : 'Inactif' }}
+              </td>
+            </tr>
+            <tr *ngIf="recruteurs.length === 0"><td colspan="4" class="empty-row">Aucun recruteur.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 🔽 PAGINATION RECRUTEURS -->
+      <div class="pagination" *ngIf="recruteursTotalPages > 1">
+        <button class="page-btn" [disabled]="recruteursPage === 1" (click)="changerPageRecruteurs(recruteursPage - 1)">‹</button>
+        <button *ngFor="let p of pagesRecruteurs"
+                class="page-btn"
+                [class.active]="p === recruteursPage"
+                (click)="changerPageRecruteurs(p)">
+          {{ p }}
+        </button>
+        <button class="page-btn" [disabled]="recruteursPage === recruteursTotalPages" (click)="changerPageRecruteurs(recruteursPage + 1)">›</button>
+        <span class="page-info">{{ recruteursPage }} / {{ recruteursTotalPages }} — {{ recruteurs.length }} recruteurs</span>
+      </div>
+    </section>
+
+    <!-- ===================== MODAL NOUVELLE/MODIFIER OFFRE ===================== -->
+    <div class="modal-overlay" *ngIf="showOffreModal" (click)="closeOffreModal()">
+      <div class="modal-box" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3>{{ editingOffreId ? 'Modifier' : 'Nouvelle' }} offre</h3>
+          <button class="modal-close-btn" (click)="closeOffreModal()">✕</button>
+        </div>
+
+        <div class="modal-error" *ngIf="modalError">{{ modalError }}</div>
+
+        <div class="form-grid">
+          <div class="form-field full">
+            <label>Type d'offre *</label>
+            <div class="type-offre-toggle">
+              <button type="button" class="type-btn" [class.active]="offreForm.type === 'STAGE'" (click)="offreForm.type = 'STAGE'">Stage</button>
+              <button type="button" class="type-btn" [class.active]="offreForm.type === 'EMPLOI'" (click)="offreForm.type = 'EMPLOI'">Emploi</button>
+            </div>
+            <p class="info-text">Pour un Stage PFE, utilisez le bouton 🎓 "Offre PFE".</p>
+          </div>
+          <div class="form-field full">
+            <label>Titre *</label>
+            <input type="text" [(ngModel)]="offreForm.titre" placeholder="Ex : Stage Développeur Angular">
+          </div>
+          <div class="form-field">
+            <label>Département *</label>
+            <input type="text" [(ngModel)]="offreForm.departement" placeholder="DSI">
+          </div>
+          <div class="form-field">
+            <label>Lieu *</label>
+            <input type="text" [(ngModel)]="offreForm.lieu" placeholder="Tunis">
+          </div>
+          <div class="form-field" *ngIf="offreForm.type === 'STAGE'">
+            <label>Durée (mois)</label>
+            <input type="number" [(ngModel)]="offreForm.dureeEnMois" min="1" max="12">
+          </div>
+          <div class="form-field">
+            <label>Date limite</label>
+            <input type="date" [(ngModel)]="offreForm.dateLimite">
+          </div>
+          <div class="form-field full">
+            <label>Profil recherché</label>
+            <input type="text" [(ngModel)]="offreForm.profilRecherche" placeholder="Compétences requises">
+          </div>
+          <div class="form-field full">
+            <label>Description</label>
+            <input type="text" [(ngModel)]="offreForm.description" placeholder="Description de l'offre">
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn-outline" (click)="closeOffreModal()">Annuler</button>
+          <button class="btn-primary" (click)="editingOffreId ? updateOffre() : saveOffre()" [disabled]="savingOffre">
+            {{ savingOffre ? 'Enregistrement...' : (editingOffreId ? 'Modifier' : 'Publier') }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== MODAL OFFRE PFE ===================== -->
+    <div class="modal-overlay" *ngIf="showOffrePfeModal" (click)="closeOffrePfeModal()">
+      <div class="modal-box modal-large" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3>🎓 {{ editingOffrePfeId ? 'Modifier' : 'Nouvelle' }} offre Stage PFE</h3>
+          <button class="modal-close-btn" (click)="closeOffrePfeModal()">✕</button>
+        </div>
+
+        <div class="modal-error" *ngIf="modalError">{{ modalError }}</div>
+
+        <h4 class="section-title">Informations générales</h4>
+        <div class="form-grid">
+          <div class="form-field full">
+            <label>Titre de l'offre *</label>
+            <input type="text" [(ngModel)]="offrePfeForm.titre" placeholder="Ex : Stages PFE — DSI 2026">
+          </div>
+          <div class="form-field">
+            <label>Département *</label>
+            <input type="text" [(ngModel)]="offrePfeForm.departement" placeholder="DSI">
+          </div>
+          <div class="form-field">
+            <label>Lieu *</label>
+            <input type="text" [(ngModel)]="offrePfeForm.lieu" placeholder="Tunis">
+          </div>
+          <div class="form-field">
+            <label>Niveau d'étude requis</label>
+            <select [(ngModel)]="offrePfeForm.niveauEtudeRequis">
+              <option value="Bac+3">Bac+3 (Licence)</option>
+              <option value="Bac+4">Bac+4 (Master 1)</option>
+              <option value="Bac+5">Bac+5 (Master 2 / Ingénieur)</option>
+              <option value="Bac+8">Bac+8 (Doctorat)</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>Spécialité requise</label>
+            <input type="text" [(ngModel)]="offrePfeForm.specialiteRequise" placeholder="Informatique, Finance...">
+          </div>
+          <div class="form-field">
+            <label>Nombre total de places</label>
+            <input type="number" [(ngModel)]="offrePfeForm.nombrePlacesTotal" min="1">
+          </div>
+          <div class="form-field">
+            <label>Période du stage</label>
+            <input type="text" [(ngModel)]="offrePfeForm.periodeStage" placeholder="Février 2026 - Juillet 2026">
+          </div>
+          <div class="form-field">
+            <label>Date limite de candidature</label>
+            <input type="date" [(ngModel)]="offrePfeForm.dateLimite">
+          </div>
+          <div class="form-field full">
+            <label>Avantages</label>
+            <input type="text" [(ngModel)]="offrePfeForm.avantages" placeholder="Indemnité, Transport, Ticket restaurant">
+          </div>
+          <div class="form-field full">
+            <label>Prérequis</label>
+            <input type="text" [(ngModel)]="offrePfeForm.prerequis" placeholder="Autonomie, Esprit d'analyse...">
+          </div>
+          <div class="form-field full">
+            <label>Description de l'offre</label>
+            <textarea rows="3" [(ngModel)]="offrePfeForm.description" placeholder="Description globale des stages PFE"></textarea>
+          </div>
+          <div class="form-field full">
+            <label>Profil recherché</label>
+            <input type="text" [(ngModel)]="offrePfeForm.profilRecherche" placeholder="Compétences générales attendues">
+          </div>
+        </div>
+
+        <div class="sujets-header">
+          <h4 class="section-title">Sujets PFE proposés ({{ offrePfeForm.sujets.length }})</h4>
+          <button type="button" class="btn-primary btn-sm" (click)="ajouterSujet()">+ Ajouter un sujet</button>
+        </div>
+
+        <div class="sujet-card" *ngFor="let s of offrePfeForm.sujets; let i = index">
+          <div class="sujet-card-header">
+            <span class="sujet-num">Sujet N° {{ i + 1 }}</span>
+            <button type="button" class="row-btn delete" (click)="supprimerSujet(i)">Supprimer</button>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-field full">
+              <label>Titre du sujet *</label>
+              <input type="text" [(ngModel)]="s.titre" placeholder="Ex : Développement d'une API REST sécurisée">
+            </div>
+            <div class="form-field full">
+              <label>Description du sujet</label>
+              <textarea rows="3" [(ngModel)]="s.description" placeholder="Contexte, problématique, périmètre..."></textarea>
+            </div>
+            <div class="form-field full">
+              <label>Technologies / Outils</label>
+              <input type="text" [(ngModel)]="s.technologies" placeholder="Java, Spring Boot, Angular, PostgreSQL">
+            </div>
+            <div class="form-field full">
+              <label>Compétences requises</label>
+              <input type="text" [(ngModel)]="s.competencesRequises" placeholder="Java, SQL, Git, REST">
+            </div>
+            <div class="form-field">
+              <label>Nombre de places</label>
+              <input type="number" [(ngModel)]="s.nombrePlaces" min="1">
+            </div>
+            <div class="form-field full">
+              <label>Objectifs</label>
+              <input type="text" [(ngModel)]="s.objectifs" placeholder="Objectifs pédagogiques et professionnels">
+            </div>
+            <div class="form-field full">
+              <label>Livrables attendus</label>
+              <input type="text" [(ngModel)]="s.livrables" placeholder="Rapport, code source, présentation...">
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn-outline" (click)="closeOffrePfeModal()">Annuler</button>
+          <button class="btn-pfe" (click)="saveOffrePfe()" [disabled]="savingOffrePfe">
+            {{ savingOffrePfe ? 'Enregistrement...' : (editingOffrePfeId ? 'Modifier l\'offre PFE' : 'Publier l\'offre PFE') }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== MODAL AFFECTER ENCADRANT ===================== -->
+    <div class="modal-overlay" *ngIf="showEncadrantModal" (click)="closeEncadrantModal()">
+      <div class="modal-box" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3>Affecter un encadrant</h3>
+          <button class="modal-close-btn" (click)="closeEncadrantModal()">✕</button>
+        </div>
+
+        <div class="modal-error" *ngIf="modalError">{{ modalError }}</div>
+
+        <div class="form-grid">
+          <div class="form-field full">
+            <p><strong>Stagiaire :</strong> {{ candidatureSelectionnee?.candidat?.prenom }} {{ candidatureSelectionnee?.candidat?.nom }}</p>
+            <p><strong>Offre :</strong> {{ candidatureSelectionnee?.offre?.titre }}</p>
+            <p><strong>Lieu :</strong> {{ candidatureSelectionnee?.offre?.lieu || 'À confirmer' }}</p>
+          </div>
+          <div class="form-field full">
+            <label>Sélectionner un encadrant *</label>
+            <select [(ngModel)]="encadrantSelectionne" class="role-select-modal">
+              <option [value]="null">-- Choisir un encadrant --</option>
+              <option *ngFor="let e of encadrants" [value]="e.id">
+                {{ e.prenom }} {{ e.nom }} - {{ e.email }}
+              </option>
+            </select>
+            <p class="info-text" *ngIf="encadrants.length === 0">Aucun encadrant disponible.</p>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn-outline" (click)="closeEncadrantModal()">Annuler</button>
+          <button class="btn-primary" (click)="affecterEncadrant()" [disabled]="savingEncadrant || !encadrantSelectionne">
+            {{ savingEncadrant ? 'Enregistrement...' : 'Affecter' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== MODAL BOOK PFE PAR ANNÉE ===================== -->
+    <div class="modal-overlay" *ngIf="showBookPfeAnneeModal" (click)="closeBookPfeAnneeModal()">
+      <div class="modal-box modal-small" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3>📄 Générer le Book PFE par année</h3>
+          <button class="modal-close-btn" (click)="closeBookPfeAnneeModal()">✕</button>
+        </div>
+
+        <div class="modal-body">
+          <p class="info-text">Sélectionnez l'année universitaire pour générer le Book PFE complet :</p>
+
+          <div class="annee-grid">
+            <button *ngFor="let a of anneesDisponibles"
+                    class="annee-btn"
+                    [class.active]="anneeSelectionnee === a"
+                    (click)="anneeSelectionnee = a">
+              <span class="annee-label">{{ a }} — {{ a + 1 }}</span>
+            </button>
+          </div>
+
+          <p class="info-text" *ngIf="anneesDisponibles.length === 0">
+            Aucune année disponible. Créez d'abord des offres PFE.
+          </p>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn-outline" (click)="closeBookPfeAnneeModal()">Annuler</button>
+          <button class="btn-primary"
+                  (click)="telechargerBookPfeAnnee()"
+                  [disabled]="!anneeSelectionnee || bookPfeLoading">
+            {{ bookPfeLoading ? 'Génération...' : '📥 Télécharger' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #simpleLoading>
+      <div class="skeleton-line w100"></div>
+      <div class="skeleton-line w70"></div>
+      <div class="skeleton-line w40"></div>
+    </ng-template>
+
+  </main>
+</div>

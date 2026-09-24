@@ -1,0 +1,102 @@
+<div class="offres-container">
+
+  <!-- Liste des offres -->
+  <div class="offres-header">
+    <h1>Offres de stage</h1>
+    <p class="subtitle">Découvrez nos opportunités et postulez en ligne</p>
+  </div>
+
+  <div class="offres-grid" *ngIf="!offresLoading; else loading">
+    <div class="offre-card" *ngFor="let offre of offres">
+      <div class="offre-header">
+        <h2>{{ offre.titre }}</h2>
+        <span class="offre-badge">{{ offre.statut }}</span>
+      </div>
+      <p class="offre-departement">{{ offre.departement || 'Général' }}</p>
+      <p class="offre-description">{{ offre.description }}</p>
+      
+      <div class="offre-footer">
+        <div class="offre-meta">
+          <span>📍 {{ offre.localisation || 'Tunis' }}</span>
+          <span>⏱️ {{ offre.duree || '6 mois' }}</span>
+        </div>
+        <button class="btn-postuler" (click)="ouvrirPostulerModal(offre)">
+          Postuler
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #loading>
+    <div class="loading">Chargement des offres...</div>
+  </ng-template>
+
+  <!-- Modal Postuler -->
+  <div class="modal-overlay" *ngIf="showPostulerModal" (click)="fermerPostulerModal()">
+    <div class="modal-box" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Postuler à : {{ selectedOffre?.titre }}</h3>
+        <button class="modal-close-btn" (click)="fermerPostulerModal()">✕</button>
+      </div>
+
+      <div class="modal-error" *ngIf="errorMessage">{{ errorMessage }}</div>
+      <div class="modal-success" *ngIf="successMessage">{{ successMessage }}</div>
+
+      <form [formGroup]="postulerForm" class="form-grid" (ngSubmit)="postuler()">
+
+        <!-- CV -->
+        <div class="form-field full">
+          <label>📄 CV (PDF) *</label>
+          <input type="file" accept="application/pdf" (change)="onCvChange($event)">
+          <p class="file-info" *ngIf="cvFile">✅ {{ cvFile.name }}</p>
+        </div>
+
+        <!-- Demande de stage -->
+        <div class="form-field full">
+          <label>📝 Demande de stage (PDF) *</label>
+          <input type="file" accept="application/pdf" (change)="onDemandeStageChange($event)">
+          <p class="file-info" *ngIf="demandeStageFile">✅ {{ demandeStageFile.name }}</p>
+        </div>
+
+        <!-- Lettre de motivation -->
+        <div class="form-field full">
+          <label>✍️ Lettre de motivation *</label>
+          <textarea formControlName="lettreMotivation" rows="4" 
+                    placeholder="Expliquez pourquoi vous êtes motivé..."></textarea>
+        </div>
+
+        <!-- Téléphone -->
+        <div class="form-field">
+          <label>📞 Téléphone *</label>
+          <input type="tel" formControlName="telephone" placeholder="+216 XX XXX XXX">
+        </div>
+
+        <!-- Niveau d'étude -->
+        <div class="form-field">
+          <label>🎓 Niveau d'étude *</label>
+          <select formControlName="niveauEtude">
+            <option value="">Sélectionner</option>
+            <option value="BAC+2">Bac+2</option>
+            <option value="BAC+3">Bac+3 (Licence)</option>
+            <option value="BAC+4">Bac+4 (Master 1)</option>
+            <option value="BAC+5">Bac+5 (Master 2 / Ingénieur)</option>
+          </select>
+        </div>
+
+        <!-- Université -->
+        <div class="form-field full">
+          <label> Université / École *</label>
+          <input type="text" formControlName="universite" placeholder="Ex: ESPRIT, INSAT...">
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-outline" (click)="fermerPostulerModal()">Annuler</button>
+          <button type="submit" class="btn-primary" [disabled]="submitting">
+            {{ submitting ? 'Envoi en cours...' : 'Envoyer ma candidature' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div>

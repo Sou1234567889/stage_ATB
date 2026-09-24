@@ -1,0 +1,87 @@
+.page-container {
+  padding: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e8ecf2;
+}
+
+.page-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1a2332;
+  margin: 0;
+}
+
+.back-btn {
+  padding: 10px 20px;
+  background: #f5f7fa;
+  color: #1a2332;
+  border: 1px solid #e8ecf2;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.back-btn:hover {
+  background: #eef2f7;
+  border-color: #dce1e8;
+}
+
+.page-content {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+.card {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  border: 1px solid #eef2f7;
+}
+
+.card h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a2332;
+  margin: 0 0 16px 0;
+}
+
+.card p {
+  color: #6b7a8f;
+  font-size: 14px;
+  margin: 0;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 500;
+  font-size: 13px;
+  color: #1a2332;
+  margin-bottom: 4px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #dce1e8;
+  border-radius: 8px;
+  font-size: 14px;
+  background: #f8f9fa;
+  color: #6b7a8f;
+  cursor: not-allowed;
+}

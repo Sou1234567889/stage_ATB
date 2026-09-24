@@ -1,0 +1,350 @@
+<div class="dash-layout">
+
+  <!-- ============================================
+       NAVBAR BLANCHE
+       ============================================ -->
+  <header class="topbar-nav">
+
+    <!-- Brand -->
+    <a routerLink="/" class="brand">
+      <img
+        src="assets/images/attijari-logo.png"
+        alt="Attijari Bank"
+        class="brand-logo"
+      />
+    </a>
+
+    <!-- Navigation centrale -->
+    <nav class="top-nav-menu">
+      <button class="top-nav-item"
+              [class.active]="activeRoute === 'dashboard'"
+              (click)="setRoute('dashboard')">
+        <span>Tableau de bord</span>
+      </button>
+
+      <button class="top-nav-item"
+              [class.active]="activeRoute === 'stagiaires'"
+              (click)="setRoute('stagiaires')">
+        <span>Mes stagiaires</span>
+        <span class="nav-badge" *ngIf="stagiaires.length > 0">{{ stagiaires.length }}</span>
+      </button>
+
+      <a class="top-nav-item" routerLink="/profile">
+        <span>Mon profil</span>
+      </a>
+    </nav>
+
+    <!-- Actions droite -->
+    <div class="top-nav-right">
+
+      <!-- Recherche -->
+      <div class="global-search">
+        <input
+          type="text"
+          placeholder="Rechercher..."
+          [(ngModel)]="searchQuery"
+        />
+      </div>
+
+    <!-- Notifications avec cloche + actions -->
+<div class="notification-wrapper">
+  <button class="icon-btn" (click)="toggleNotifPanel()" [class.active]="showNotifPanel" title="Notifications">
+    <span class="bell-icon">🔔</span>
+    <span class="notif-badge" *ngIf="notificationCount > 0">{{ notificationCount }}</span>
+  </button>
+
+  <div class="notif-dropdown" *ngIf="showNotifPanel">
+
+    <!-- Header avec Tout marquer lu -->
+    <div class="notif-header">
+      <h3>Notifications</h3>
+      <button class="mark-all-btn"
+              *ngIf="notificationCount > 0"
+              (click)="markAllAsRead()">
+        Tout marquer lu
+      </button>
+    </div>
+
+    <!-- Liste -->
+    <div class="notif-list">
+      <div class="notif-item"
+           *ngFor="let notif of notifications"
+           (click)="onNotifClick(notif)"
+           [class.read]="notif.lu">
+
+        <!-- Icône -->
+        <div class="notif-avatar" [ngClass]="getNotifTypeClass(notif.type)">
+          <span class="notif-icon">{{ getNotifIcon(notif.type) }}</span>
+        </div>
+
+        <!-- Contenu -->
+        <div class="notif-content">
+          <p class="notif-text">
+            <strong>{{ notif.titre }}</strong>
+            {{ notif.message }}
+          </p>
+          <span class="notif-time">{{ getTimeAgo(notif.timestamp) }}</span>
+        </div>
+
+        <!-- Point non lu -->
+        <div class="notif-unread-dot" *ngIf="!notif.lu"></div>
+
+        <!-- 🆕 Boutons d'action (au survol) -->
+        <div class="notif-actions">
+          <button class="notif-action-btn"
+                  *ngIf="!notif.lu"
+                  (click)="marquerLue($event, notif)"
+                  title="Marquer comme lue">
+            ✓
+          </button>
+          <button class="notif-action-btn"
+                  (click)="archiverNotif($event, notif)"
+                  title="Archiver">
+            📦
+          </button>
+          <button class="notif-action-btn danger"
+                  (click)="supprimerNotif($event, notif)"
+                  title="Supprimer">
+            🗑
+          </button>
+        </div>
+      </div>
+
+      <!-- État vide -->
+      <div class="notif-empty" *ngIf="notifications.length === 0">
+        <p>Aucune notification</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+      <!-- Profil -->
+      <div class="admin-chip">
+        <div class="avatar-circle">{{ adminName | slice:0:2 | uppercase }}</div>
+        <div class="admin-info">
+          <p class="admin-name">{{ adminName }}</p>
+          <p class="admin-role">Encadrant</p>
+        </div>
+      </div>
+
+      <!-- Logout -->
+      <button class="logout-btn" (click)="onLogout()" title="Se déconnecter">
+        Déconnexion
+      </button>
+    </div>
+  </header>
+
+  <!-- ============================================
+       MAIN
+       ============================================ -->
+  <main class="main">
+
+    <!-- Page header -->
+    <div class="page-header" *ngIf="selectedStagiaire">
+      <div>
+        <h1>Fiche stagiaire</h1>
+        <p class="subtitle">Consultez et gérez les informations de <strong>{{ getNomComplet(selectedStagiaire) }}</strong>.</p>
+      </div>
+    </div>
+
+    <div class="page-header" *ngIf="!selectedStagiaire && activeRoute === 'stagiaires'">
+      <div>
+        <h1>Mes stagiaires</h1>
+        <p class="subtitle">Gérez et suivez vos stagiaires assignés.</p>
+      </div>
+    </div>
+
+    <ng-container *ngIf="!selectedStagiaire">
+
+      <!-- ============ STATS CARDS ============ -->
+      <section class="stats-grid" *ngIf="activeRoute === 'dashboard'">
+        <div class="stat-card" *ngFor="let s of stats" [ngClass]="s.accentClass">
+          <div class="stat-body">
+            <p class="stat-value">{{ s.value }}</p>
+            <p class="stat-label">{{ s.label }}</p>
+          </div>
+          <div class="stat-arrow">→</div>
+        </div>
+      </section>
+
+      <!-- ============ ACTIONS RAPIDES ============ -->
+      <section class="quick-actions" *ngIf="activeRoute === 'dashboard'">
+        <h2 class="section-title">Actions rapides</h2>
+
+        <div class="quick-grid">
+          <div class="quick-card" (click)="setRoute('stagiaires')">
+            <h3>Voir les stagiaires</h3>
+            <p>Consultez la liste complète de vos stagiaires</p>
+          </div>
+
+          <div class="quick-card">
+            <h3>Valider les livrables</h3>
+            <p>Approuvez ou demandez des modifications</p>
+          </div>
+
+          <div class="quick-card">
+            <h3>Démarrer une visio</h3>
+            <p>Lancez un appel vidéo avec un stagiaire</p>
+          </div>
+
+          <div class="quick-card">
+            <h3>Envoyer un message</h3>
+            <p>Communiquez directement par chat</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ TABLEAU ============ -->
+      <section class="table-card">
+        <div class="table-header">
+          <div class="table-header-left">
+            <h2>Mes stagiaires <span class="count-pill">{{ filteredStagiaires.length }}</span></h2>
+            <p class="table-subtitle">Gérez vos stagiaires assignés</p>
+          </div>
+
+          <div class="table-filters">
+            <button class="filter-btn" [class.active]="filterStatut === 'ALL'" (click)="filterStatut = 'ALL'">
+              Tous
+            </button>
+            <button class="filter-btn" [class.active]="filterStatut === 'EN_COURS'" (click)="filterStatut = 'EN_COURS'">
+              En cours
+            </button>
+            <button class="filter-btn" [class.active]="filterStatut === 'TERMINEE'" (click)="filterStatut = 'TERMINEE'">
+              Terminés
+            </button>
+          </div>
+        </div>
+
+        <div class="loading-skeleton" *ngIf="loading">
+          <div class="skeleton-row" *ngFor="let i of [1,2,3]">
+            <div class="skeleton-avatar"></div>
+            <div class="skeleton-lines">
+              <div class="skeleton-line long"></div>
+              <div class="skeleton-line short"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="table-wrap" *ngIf="!loading && filteredStagiaires.length > 0">
+          <table class="users-table">
+            <thead>
+              <tr>
+                <th>Stagiaire</th>
+                <th>Offre</th>
+                <th>Statut</th>
+                <th class="th-actions">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let s of filteredStagiaires">
+                <td>
+                  <div class="user-cell">
+                    <span class="avatar-initials">{{ getInitiales(s) }}</span>
+                    <div class="user-info">
+                      <p class="user-name">{{ getNomComplet(s) }}</p>
+                      <p class="user-email">{{ s.email || '—' }}</p>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="offre-tag">{{ getOffreTitre(s) }}</span></td>
+                <td>
+                  <span class="role-badge" [ngClass]="statutBadgeClass(s.statut)">
+                    {{ getStatutLabel(s.statut) }}
+                  </span>
+                </td>
+                <td class="td-actions">
+                  <div class="row-actions">
+                    <button
+                      *ngIf="s.statut === 'ACCEPTE' || s.statut === 'EN_COURS' || s.statut === 'TERMINEE'"
+                      class="row-btn primary"
+                      (click)="ouvrirDetail(s)">
+                      Ouvrir
+                    </button>
+                    <span
+                      *ngIf="s.statut !== 'ACCEPTE' && s.statut !== 'EN_COURS' && s.statut !== 'TERMINEE'"
+                      class="row-btn disabled">
+                      En attente
+                    </span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="empty-state" *ngIf="!loading && filteredStagiaires.length === 0">
+          <p class="empty-title">Aucun stagiaire</p>
+          <p class="empty-sub">
+            <ng-container *ngIf="searchQuery">Aucun résultat pour "{{ searchQuery }}"</ng-container>
+            <ng-container *ngIf="!searchQuery">Aucun stagiaire ne vous est encore assigné.</ng-container>
+          </p>
+        </div>
+      </section>
+
+    </ng-container>
+
+    <!-- Fiche stagiaire détaillée -->
+   <!-- Fiche stagiaire détaillée -->
+<app-stagiaire-detail
+  *ngIf="selectedStagiaire"
+  [stagiaire]="selectedStagiaire"
+  [adminName]="adminName"
+  [autoJoinMeetUrl]="pendingMeetUrl"
+  (close)="fermerDetail()">
+</app-stagiaire-detail>
+
+  </main>
+
+  <!-- ============================================
+       FOOTER
+       ============================================ -->
+  <footer class="app-footer">
+    <div class="footer-content">
+
+      <div class="footer-left">
+        <img
+          src="assets/images/attijari-logo.png"
+          alt="Attijari Bank"
+          class="footer-logo"
+        />
+        <p class="footer-text">
+          © {{ currentYear }} <strong>Attijari Bank</strong> — Talentis. Tous droits réservés.
+        </p>
+      </div>
+
+      <div class="footer-links">
+        <a href="#">Confidentialité</a>
+        <span class="separator">•</span>
+        <a href="#">Conditions d'utilisation</a>
+        <span class="separator">•</span>
+        <a href="#">Aide</a>
+        <span class="separator">•</span>
+        <a href="#">Contact</a>
+      </div>
+
+      <div class="footer-right">
+        <span class="footer-version">v1.0.0</span>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- Toast -->
+  <div class="toast-container" *ngIf="showToast">
+    <div class="toast" [ngClass]="getToastClass()">
+      <span class="toast-message">{{ toastMessage }}</span>
+      <button class="toast-close" (click)="closeToast()">✕</button>
+    </div>
+  </div>
+
+  <!-- Appel entrant -->
+  <app-incoming-call
+    [visible]="showIncomingCall"
+    [callerName]="incomingCallFrom"
+    [callerRole]="incomingCallRole"
+    [callerInitials]="incomingCallInitials"
+    (accept)="accepterAppel()"
+    (refuse)="refuserAppel()">
+  </app-incoming-call>
+
+</div>

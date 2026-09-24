@@ -1,0 +1,167 @@
+<div class="dash-layout">
+
+  <!-- ===================== SIDEBAR ===================== -->
+  <aside class="sidebar">
+    <a routerLink="/dashboard/candidat" class="brand">
+      <img
+        src="assets/images/attijari-logo-removebg-preview.png"
+        alt="Attijari Bank"
+        class="brand-logo"
+      >
+    </a>
+
+    <div class="sidebar-user-card">
+      <div class="sidebar-avatar">{{ adminName | slice:0:2 | uppercase }}</div>
+      <div>
+        <p class="sidebar-user-name">{{ adminName }}</p>
+        <span class="sidebar-role-badge">Employé</span>
+      </div>
+    </div>
+
+    <button class="nav-primary" [class.active]="activeRoute === 'dashboard'" (click)="setRoute('dashboard')">
+      Tableau de bord
+    </button>
+
+    <nav class="nav-group">
+      <p class="nav-group-title">Mon espace</p>
+
+      <button class="nav-item" [class.active]="activeRoute === 'candidatures'" (click)="setRoute('candidatures')">
+        Mes candidatures
+      </button>
+      <a class="nav-item" routerLink="/offres">
+        Offres disponibles
+      </a>
+    </nav>
+
+        <nav class="nav-group">
+      <p class="nav-group-title">Mon compte</p>
+      <a class="nav-item" routerLink="/profile">Mon profil</a>
+    </nav>
+
+<div class="sidebar-footer">
+      
+      <button class="logout-btn" (click)="onLogout()">
+        Se déconnecter
+      </button>
+    </div>
+  </aside>
+
+  <!-- ===================== MAIN CONTENT ===================== -->
+  <main class="main">
+
+    <header class="topbar">
+      <div>
+        <h1>
+          <ng-container *ngIf="activeRoute === 'dashboard'">Tableau de bord</ng-container>
+          <ng-container *ngIf="activeRoute === 'candidatures'">Mes candidatures</ng-container>
+        </h1>
+        <p class="subtitle">
+          <ng-container *ngIf="activeRoute === 'dashboard'">Bienvenue, {{ adminName }} — Suivez l'état d'avancement de vos candidatures.</ng-container>
+          <ng-container *ngIf="activeRoute !== 'dashboard'">{{ adminName }} · Employé</ng-container>
+        </p>
+      </div>
+
+      <div class="topbar-right">
+        <button class="icon-btn">
+          <span class="badge" *ngIf="notificationCount > 0">{{ notificationCount }}</span>
+        </button>
+
+        <div class="admin-chip">
+          <div class="avatar-circle">{{ adminName | slice:0:2 | uppercase }}</div>
+          <div>
+            <p class="admin-name">{{ adminName }}</p>
+            <p class="admin-role">{{ adminRole }}</p>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="error-banner" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+    <!-- ===================== DASHBOARD HOME ===================== -->
+    <ng-container *ngIf="activeRoute === 'dashboard'">
+
+      <section class="stats-grid">
+        <ng-container *ngIf="!loading; else statsSkeleton">
+          <div class="stat-card" *ngFor="let s of stats" [ngClass]="s.accentClass">
+            <div class="stat-body">
+              <p class="stat-value">{{ s.value }}</p>
+              <p class="stat-label">{{ s.label }}</p>
+            </div>
+          </div>
+        </ng-container>
+
+        <ng-template #statsSkeleton>
+          <div class="stat-card skeleton" *ngFor="let i of [1,2,3,4]">
+            <div class="stat-body">
+              <div class="skeleton-line w40"></div>
+              <div class="skeleton-line w70"></div>
+            </div>
+          </div>
+        </ng-template>
+      </section>
+
+      <section class="quick-actions-row">
+        <button class="quick-action-card" (click)="setRoute('candidatures')">
+          <span class="qa-label">Voir mes candidatures</span>
+        </button>
+        <a class="quick-action-card" routerLink="/offres">
+          <span class="qa-label">Offres disponibles</span>
+        </a>
+      </section>
+
+      <section class="table-card" *ngIf="!loading">
+        <div class="table-header">
+          <h2>Mes candidatures <span class="count-pill">{{ candidatures.length }}</span></h2>
+        </div>
+        <div class="table-wrap" *ngIf="candidatures.length > 0; else emptyState">
+          <table class="users-table">
+            <thead><tr><th>Offre</th><th>Date dépôt</th><th>Statut</th></tr></thead>
+            <tbody>
+              <tr *ngFor="let c of candidatures">
+                <td class="fw600">{{ c.offreTitre }}</td>
+                <td class="muted">{{ c.dateDepot | date:'dd/MM/yyyy' }}</td>
+                <td><span class="role-badge" [ngClass]="getStatusClass(c.statut)">{{ c.statut }}</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <ng-template #emptyState>
+          <p class="empty-row">Vous n'avez pas encore postulé à une offre.</p>
+        </ng-template>
+      </section>
+
+    </ng-container>
+
+    <!-- ===================== CANDIDATURES ===================== -->
+    <section class="table-card" *ngIf="activeRoute === 'candidatures'">
+      <div class="table-header">
+        <h2>Mes candidatures <span class="count-pill">{{ candidatures.length }}</span></h2>
+      </div>
+
+      <div class="table-wrap" *ngIf="!loading; else simpleLoading">
+        <table class="users-table" *ngIf="candidatures.length > 0">
+          <thead><tr><th>Offre</th><th>Date dépôt</th><th>Statut</th></tr></thead>
+          <tbody>
+            <tr *ngFor="let c of candidatures">
+              <td class="fw600">{{ c.offreTitre }}</td>
+              <td class="muted">{{ c.dateDepot | date:'dd/MM/yyyy' }}</td>
+              <td><span class="role-badge" [ngClass]="getStatusClass(c.statut)">{{ c.statut }}</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="empty-row" *ngIf="candidatures.length === 0">
+          <p>Vous n'avez pas encore postulé à une offre.</p>
+          <a routerLink="/offres" class="btn-primary">Voir les offres disponibles</a>
+        </div>
+      </div>
+    </section>
+
+    <ng-template #simpleLoading>
+      <div class="skeleton-line w100"></div>
+      <div class="skeleton-line w70"></div>
+      <div class="skeleton-line w40"></div>
+    </ng-template>
+
+  </main>
+</div>

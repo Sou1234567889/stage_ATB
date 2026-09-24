@@ -1,0 +1,218 @@
+<!-- ============ HERO AVEC IMAGE DE FOND ============ -->
+<header class="hero-workspace">
+
+  <!-- Image de fond -->
+  <div class="hero-bg">
+    <img src="assets/images/hero-bureau.png" alt="Attijari Workspace" class="hero-bg-img">
+  </div>
+
+  <!-- Overlay dégradé pour lisibilité -->
+  <div class="hero-overlay"></div>
+
+  <!-- Formes décoratives en bas à gauche -->
+  <div class="hero-shape hero-shape-yellow"></div>
+  <div class="hero-shape hero-shape-red"></div>
+
+  <!-- Contenu principal -->
+  <div class="hero-container">
+
+    <!-- ============ NAVBAR ============ -->
+    <nav class="public-navbar">
+
+  
+
+      <!-- MENU -->
+      <ul class="nav-menu">
+        <li><a routerLink="/" class="nav-link active">Accueil</a></li>
+        <li><a routerLink="/a-propos" class="nav-link">À propos</a></li>
+        <li><a routerLink="/services" class="nav-link">Services</a></li>
+        <li><a routerLink="/ressources" class="nav-link">Ressources</a></li>
+        <li><a routerLink="/contact" class="nav-link">Contact</a></li>
+      </ul>
+
+      <!-- LOGIN -->
+      <a routerLink="/login" class="btn-login">
+        <span>Se connecter</span>
+      </a>
+    </nav>
+
+    <!-- ============ HERO CONTENT ============ -->
+    <div class="hero-main">
+
+      <!-- Ligne décorative -->
+      <div class="hero-line"></div>
+
+      <!-- Titre -->
+      <h1 class="hero-title">
+        Attijari <span class="hero-title-red">Workspace</span>
+      </h1>
+
+      <h2 class="hero-subtitle">
+        Votre espace de travail,<br>
+        au service de votre réussite
+      </h2>
+
+      <p class="hero-description">
+        Une plateforme moderne et sécurisée pour collaborer,<br>
+        échanger et avancer ensemble.
+      </p>
+
+      <!-- 4 Features SANS EMOJI -->
+      <div class="hero-features">
+
+        <div class="feature">
+          
+          <p class="feature-title">Collaborer</p>
+          <p class="feature-text">plus efficacement</p>
+        </div>
+
+        <div class="feature">
+        
+          <p class="feature-title">Sécuriser</p>
+          <p class="feature-text">vos échanges</p>
+        </div>
+
+        <div class="feature">
+         
+          <p class="feature-title">Simplifier</p>
+          <p class="feature-text">vos processus</p>
+        </div>
+
+        <div class="feature">
+         
+          <p class="feature-title">Évoluer</p>
+          <p class="feature-text">ensemble</p>
+        </div>
+
+      </div>
+
+      <!-- CTA -->
+      <div class="hero-actions">
+        <a routerLink="/signup" class="btn-hero-cta">
+          Découvrir Attijari Workspace
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2.5"
+               stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </a>
+        <a routerLink="/login" class="btn-hero-secondary">
+          J'ai déjà un compte
+        </a>
+      </div>
+
+    </div>
+  </div>
+</header>
+
+<!-- ============ SECTIONS ============ -->
+<app-chiffres-cles></app-chiffres-cles>
+<app-valeurs></app-valeurs>
+<app-agences></app-agences>
+
+<section id="offres-section">
+  <app-offres-list
+    [mode]="'public'"
+    (offreClicked)="onOffreClick($event)">
+  </app-offres-list>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer class="public-footer">
+  <div class="footer-content">
+
+    <div class="footer-col footer-brand">
+      <div class="footer-logo-wrap">
+        <img src="assets/images/attijari-logo.png" alt="Attijari Bank" class="footer-logo">
+      </div>
+      <p class="footer-description">
+        Plateforme de gestion des stages et de suivi des talents
+        de la banque Attijari.
+      </p>
+      <div class="footer-socials">
+        <a href="#" class="social-btn" aria-label="Facebook">FB</a>
+        <a href="#" class="social-btn" aria-label="LinkedIn">IN</a>
+        <a href="#" class="social-btn" aria-label="Twitter">TW</a>
+      </div>
+    </div>
+
+    <div class="footer-col">
+      <h4 class="footer-title">Découvrir</h4>
+      <ul class="footer-links">
+        <li><a routerLink="/a-propos">À propos</a></li>
+        <li><a routerLink="/services">Services</a></li>
+        <li><a routerLink="/offres">Emploi &amp; Carrière</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h4 class="footer-title">Espace</h4>
+      <ul class="footer-links">
+        <li><a routerLink="/login">Se connecter</a></li>
+        <li><a routerLink="/signup">S'inscrire</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h4 class="footer-title">Centre de Relation Client</h4>
+      <p class="footer-contact-text">
+        Besoin d'informations ou d'assistance ?
+      </p>
+      <a href="tel:71111300" class="footer-phone">
+       📞 71 111 300
+      </a>
+    </div>
+
+  </div>
+
+  <div class="footer-bottom">
+    <p>© 2026 Attijari Bank — Tous droits réservés.</p>
+    <div class="footer-bottom-links">
+      <a href="#">Confidentialité</a>
+      <a href="#">Politique Cookies</a>
+      <a href="#">Plan du site</a>
+    </div>
+  </div>
+</footer>
+
+<!-- ============ MODAL INSCRIPTION ============ -->
+<div class="modal-overlay" *ngIf="showSignupModal" (click)="fermerModal()">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Inscription requise</h3>
+      <button class="modal-close" (click)="fermerModal()">✕</button>
+    </div>
+
+    <div class="modal-body">
+      <p class="modal-intro">
+        Pour postuler à cette offre, vous devez d'abord créer un compte.
+      </p>
+
+      <div class="offre-preview" *ngIf="offreSelectionnee">
+        <span class="offre-badge"
+              [ngClass]="offreSelectionnee.type === 'STAGE' ? 'badge-stage' : 'badge-emploi'">
+          {{ offreSelectionnee.type === 'STAGE' ? 'Stage' : 'Emploi' }}
+        </span>
+        <h4>{{ offreSelectionnee.titre }}</h4>
+        <p class="offre-preview-dept">{{ offreSelectionnee.departement }}</p>
+      </div>
+
+      <div class="etapes">
+        <div class="etape"><span class="etape-num">1</span><p>Créez votre compte</p></div>
+        <div class="etape"><span class="etape-num">2</span><p>L'administrateur attribue votre rôle</p></div>
+        <div class="etape"><span class="etape-num">3</span><p>Vous recevez un email + WhatsApp de confirmation</p></div>
+        <div class="etape"><span class="etape-num">4</span><p>Vous postulez à l'offre</p></div>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <a routerLink="/login" class="btn-outline" (click)="fermerModal()">
+        J'ai déjà un compte
+      </a>
+      <a routerLink="/signup" class="btn-primary" (click)="sauverOffre()">
+        S'inscrire maintenant
+      </a>
+    </div>
+  </div>
+</div>
